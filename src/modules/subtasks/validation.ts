@@ -198,20 +198,32 @@ export class SubtasksValidator {
   }
 
   static sanitizeCreateSubtask(data: CreateSubtaskRequest): CreateSubtaskRequest {
-    return {
+    const sanitized: CreateSubtaskRequest = {
       relation_task_id: data.relation_task_id,
       subtask_title:
         typeof data.subtask_title === 'string' ? data.subtask_title.trim() : data.subtask_title,
-      subtask_description:
-        typeof data.subtask_description === 'string'
-          ? data.subtask_description.trim() || null
-          : data.subtask_description,
-      assigned_to: data.assigned_to || null,
-      subtask_date:
-        typeof data.subtask_date === 'string'
-          ? data.subtask_date.trim() || null
-          : data.subtask_date,
     };
+
+    // Only include optional fields if they are provided and not null
+    if (data.subtask_description !== undefined) {
+      sanitized.subtask_description =
+        typeof data.subtask_description === 'string'
+          ? data.subtask_description.trim() || undefined
+          : data.subtask_description;
+    }
+
+    if (data.assigned_to !== undefined) {
+      sanitized.assigned_to = data.assigned_to;
+    }
+
+    if (data.subtask_date !== undefined) {
+      sanitized.subtask_date =
+        typeof data.subtask_date === 'string'
+          ? data.subtask_date.trim() || undefined
+          : data.subtask_date;
+    }
+
+    return sanitized;
   }
 
   static sanitizeUpdateSubtask(data: UpdateSubtaskRequest): UpdateSubtaskRequest {

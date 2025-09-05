@@ -1,4 +1,4 @@
-import { query } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import {
   Subtask,
   CreateSubtaskRequest,
@@ -21,7 +21,7 @@ export class SubtasksService {
     pagination: PaginationParams = { page: 1, limit: 10 }
   ): Promise<SubtasksListResponse> {
     try {
-      let whereConditions: string[] = ['1=1'];
+      const whereConditions: string[] = ['1=1'];
       const params: any[] = [];
 
       // Apply filters
@@ -288,22 +288,22 @@ export class SubtasksService {
       const sanitizedData = SubtasksValidator.sanitizeCreateSubtask(subtaskData);
 
       // Verify parent task exists
-      const tasks = (await query('SELECT task_id FROM tasks WHERE task_id = ?', [
-        sanitizedData.relation_task_id,
-      ])) as any[];
-
-      if (tasks.length === 0) {
+      const task = await prisma.task.findUnique({
+        where: { id: sanitizedData.relation_task_id },
+      });
+      if (!task) {
         throw new SubtasksError('Parent task not found', 400, 'INVALID_TASK_ID');
       }
 
       // Validate assigned user exists if provided
       if (sanitizedData.assigned_to) {
-        const users = (await query(
-          'SELECT user_id FROM users WHERE user_id = ? AND is_active = 1',
-          [sanitizedData.assigned_to]
-        )) as any[];
-
-        if (users.length === 0) {
+        const user = await prisma.user.findFirst({
+          where: { 
+            id: sanitizedData.assigned_to,
+            isActive: true 
+          },
+        });
+        if (!user) {
           throw new SubtasksError(
             'Assigned user not found or inactive',
             400,
@@ -312,30 +312,47 @@ export class SubtasksService {
         }
       }
 
-      const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      // Create new subtask using Prisma
+      const createdSubtask = await prisma.subtask.create({
+        data: {
+          relationTaskId: sanitizedData.relation_task_id,
+          title: sanitizedData.subtask_title,
+          description: sanitizedData.subtask_description,
+          assignedTo: sanitizedData.assigned_to,
+          isCompleted: false,
+        },
+        include: {
+          assignedUser: true,
+          task: {
+            include: {
+              creator: true,
+            },
+          },
+        },
+      });
 
-      // Insert new subtask
-      const result = (await query(
-        `INSERT INTO subtasks (relation_task_id, subtask_title, subtask_description, assigned_to, subtask_date, created_at, updated_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          sanitizedData.relation_task_id,
-          sanitizedData.subtask_title,
-          sanitizedData.subtask_description,
-          sanitizedData.assigned_to,
-          sanitizedData.subtask_date,
-          currentTime,
-          currentTime,
-        ]
-      )) as any;
-
-      // Get the created subtask
-      const newSubtask = await this.getSubtaskById(result.insertId);
+      // Transform to match expected response format
+      const subtaskResponse: Subtask = {
+        subtask_id: createdSubtask.id,
+        relation_task_id: createdSubtask.relationTaskId,
+        subtask_title: createdSubtask.title,
+        subtask_description: createdSubtask.description,
+        assigned_to: createdSubtask.assignedTo,
+        assigned_user_name: createdSubtask.assignedUser?.name,
+        subtask_status: createdSubtask.isCompleted ? 'done' : 'todo',
+        subtask_comment: null,
+        subtask_date: null,
+        created_at: createdSubtask.createdAt?.toISOString() || '',
+        updated_at: createdSubtask.updatedAt?.toISOString() || '',
+        task_title: createdSubtask.task?.title,
+        task_created_by: createdSubtask.task?.createdBy,
+        task_created_by_name: createdSubtask.task?.creator?.name,
+      };
 
       return {
         success: true,
         message: 'Subtask created successfully',
-        subtask: newSubtask.subtask,
+        subtask: subtaskResponse,
       };
     } catch (error) {
       if (error instanceof SubtasksError) {

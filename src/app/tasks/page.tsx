@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import KanbanBoard from '@/components/KanbanBoard';
 import TaskForm from '@/components/TaskForm';
+import AddSubtaskModal from '@/components/AddSubtaskModal';
 import { Task } from '@/types';
 import { Toaster } from 'sonner';
 
 export default function TasksPage() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [showAddSubtaskModal, setShowAddSubtaskModal] = useState(false);
+  const [selectedTaskForSubtask, setSelectedTaskForSubtask] = useState<Task | null>(null);
   const [refreshBoard, setRefreshBoard] = useState(0);
 
   const handleCreateTask = () => {
@@ -32,10 +35,18 @@ export default function TasksPage() {
   };
 
   const handleAddSubtask = (task: Task) => {
-    // For now, we'll open the task form to create a new task
-    // In the future, this could open a specific subtask creation modal
-    setEditingTask(null);
-    setShowTaskForm(true);
+    setSelectedTaskForSubtask(task);
+    setShowAddSubtaskModal(true);
+  };
+
+  const handleSubtaskSuccess = () => {
+    // Trigger a refresh of the Kanban board
+    setRefreshBoard((prev) => prev + 1);
+  };
+
+  const handleCloseAddSubtaskModal = () => {
+    setShowAddSubtaskModal(false);
+    setSelectedTaskForSubtask(null);
   };
 
   return (
@@ -52,6 +63,13 @@ export default function TasksPage() {
         onClose={handleCloseForm}
         task={editingTask}
         onSuccess={handleFormSuccess}
+      />
+
+      <AddSubtaskModal
+        open={showAddSubtaskModal}
+        onOpenChange={setShowAddSubtaskModal}
+        task={selectedTaskForSubtask}
+        onSuccess={handleSubtaskSuccess}
       />
 
       <Toaster position='top-right' />

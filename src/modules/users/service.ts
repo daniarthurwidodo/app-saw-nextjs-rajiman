@@ -22,7 +22,7 @@ export class UsersService {
   ): Promise<UsersListResponse> {
     try {
       // Start with a simple query for now to avoid parameter issues
-      let whereConditions: string[] = ['1=1'];
+      const whereConditions: string[] = ['1=1'];
       const params: any[] = [];
 
       // Apply filters
