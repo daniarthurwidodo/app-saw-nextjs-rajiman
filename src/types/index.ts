@@ -20,6 +20,13 @@ export enum TaskPriority {
   HIGH = 'high',
 }
 
+// Subtask Status
+export enum SubtaskStatus {
+  TODO = 'todo',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done',
+}
+
 // Approval Status
 export enum ApprovalStatus {
   PENDING = 'pending',
@@ -93,7 +100,7 @@ export interface Subtask {
   assigned_to?: number;
   assigned_user_name?: string;
   is_completed?: boolean;
-  status: string; // Added to match API response format
+  status: SubtaskStatus; // Updated to use enum
   created_at: string;
   updated_at: string;
   images?: SubtaskImage[]; // Added images array

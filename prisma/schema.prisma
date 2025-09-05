@@ -81,6 +81,7 @@ model Subtask {
   description    String?         @map("subtask_description") @db.Text
   assignedTo     Int?            @map("assigned_to")
   isCompleted    Boolean?        @default(false) @map("is_completed")
+  status         TaskStatus      @default(todo) @map("subtask_status")
   createdAt      DateTime?       @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt      DateTime?       @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
   documentation  Documentation[]
@@ -89,6 +90,7 @@ model Subtask {
 
   @@index([assignedTo], map: "idx_assigned_to")
   @@index([relationTaskId], map: "idx_relation_task")
+  @@index([status], map: "idx_subtask_status")
   @@map("subtasks")
 }
 

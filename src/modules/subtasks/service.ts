@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { query } from '@/lib/db';
 import {
   Subtask,
   CreateSubtaskRequest,
@@ -12,6 +13,7 @@ import {
   SubtaskFilters,
   PaginationParams,
   SubtasksError,
+  SubtaskStatus,
 } from './types';
 import { SubtasksValidator } from './validation';
 
@@ -227,40 +229,44 @@ export class SubtasksService {
 
   static async getSubtaskById(subtaskId: number): Promise<SubtaskResponse> {
     try {
-      const subtasks = (await query(
-        `
-        SELECT 
-          s.subtask_id,
-          s.relation_task_id,
-          s.subtask_title,
-          s.subtask_description,
-          s.assigned_to,
-          assigned_user.name as assigned_user_name,
-          s.subtask_status,
-          s.subtask_comment,
-          s.subtask_date,
-          s.created_at,
-          s.updated_at,
-          t.title as task_title,
-          t.created_by as task_created_by,
-          task_creator.name as task_created_by_name
-        FROM subtasks s
-        LEFT JOIN users assigned_user ON s.assigned_to = assigned_user.user_id
-        LEFT JOIN tasks t ON s.relation_task_id = t.task_id
-        LEFT JOIN users task_creator ON t.created_by = task_creator.user_id
-        WHERE s.subtask_id = ?
-      `,
-        [subtaskId]
-      )) as Subtask[];
+      const subtask = await prisma.subtask.findUnique({
+        where: { id: subtaskId },
+        include: {
+          assignedUser: true,
+          task: {
+            include: {
+              creator: true,
+            },
+          },
+        },
+      });
 
-      if (subtasks.length === 0) {
+      if (!subtask) {
         throw new SubtasksError('Subtask not found', 404, 'SUBTASK_NOT_FOUND');
       }
+
+      // Transform to match expected response format
+      const subtaskResponse: Subtask = {
+        subtask_id: subtask.id,
+        relation_task_id: subtask.relationTaskId,
+        subtask_title: subtask.title,
+        subtask_description: subtask.description,
+        assigned_to: subtask.assignedTo,
+        assigned_user_name: subtask.assignedUser?.name,
+        subtask_status: subtask.status as SubtaskStatus,
+        subtask_comment: null,
+        subtask_date: null,
+        created_at: subtask.createdAt?.toISOString() || '',
+        updated_at: subtask.updatedAt?.toISOString() || '',
+        task_title: subtask.task?.title,
+        task_created_by: subtask.task?.createdBy,
+        task_created_by_name: subtask.task?.creator?.name,
+      };
 
       return {
         success: true,
         message: 'Subtask retrieved successfully',
-        subtask: subtasks[0],
+        subtask: subtaskResponse,
       };
     } catch (error) {
       if (error instanceof SubtasksError) {
@@ -320,6 +326,7 @@ export class SubtasksService {
           description: sanitizedData.subtask_description,
           assignedTo: sanitizedData.assigned_to,
           isCompleted: false,
+          status: SubtaskStatus.TODO,
         },
         include: {
           assignedUser: true,
@@ -339,7 +346,7 @@ export class SubtasksService {
         subtask_description: createdSubtask.description,
         assigned_to: createdSubtask.assignedTo,
         assigned_user_name: createdSubtask.assignedUser?.name,
-        subtask_status: createdSubtask.isCompleted ? 'done' : 'todo',
+        subtask_status: createdSubtask.status as SubtaskStatus,
         subtask_comment: null,
         subtask_date: null,
         created_at: createdSubtask.createdAt?.toISOString() || '',
@@ -401,35 +408,36 @@ export class SubtasksService {
         }
       }
 
-      // Build update query dynamically
-      const updateFields: string[] = [];
-      const updateParams: any[] = [];
+      // Build update data for Prisma
+      const updateData: any = {};
 
-      Object.keys(sanitizedData).forEach((key) => {
-        if (sanitizedData[key as keyof UpdateSubtaskRequest] !== undefined) {
-          updateFields.push(`${key} = ?`);
-          updateParams.push(sanitizedData[key as keyof UpdateSubtaskRequest]);
-        }
-      });
+      if (sanitizedData.subtask_title !== undefined) {
+        updateData.title = sanitizedData.subtask_title;
+      }
 
-      if (updateFields.length === 0) {
+      if (sanitizedData.subtask_description !== undefined) {
+        updateData.description = sanitizedData.subtask_description;
+      }
+
+      if (sanitizedData.assigned_to !== undefined) {
+        updateData.assignedTo = sanitizedData.assigned_to;
+      }
+
+      if (sanitizedData.subtask_status !== undefined) {
+        // Map subtask_status to both status and isCompleted fields
+        updateData.status = sanitizedData.subtask_status;
+        updateData.isCompleted = sanitizedData.subtask_status === SubtaskStatus.DONE;
+      }
+
+      if (Object.keys(updateData).length === 0) {
         throw new SubtasksError('No fields to update', 400, 'NO_UPDATE_FIELDS');
       }
 
-      // Add updated_at
-      updateFields.push('updated_at = ?');
-      updateParams.push(new Date().toISOString().slice(0, 19).replace('T', ' '));
-
-      // Add subtask ID for WHERE clause
-      updateParams.push(subtaskId);
-
-      const updateQuery = `
-        UPDATE subtasks 
-        SET ${updateFields.join(', ')} 
-        WHERE subtask_id = ?
-      `;
-
-      await query(updateQuery, updateParams);
+      // Update using Prisma
+      await prisma.subtask.update({
+        where: { id: subtaskId },
+        data: updateData,
+      });
 
       // Get updated subtask
       const updatedSubtask = await this.getSubtaskById(subtaskId);

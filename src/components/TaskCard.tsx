@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Task, TaskPriority, Subtask, TaskStatus } from '@/types';
+import { Task, TaskPriority, Subtask, TaskStatus, SubtaskStatus } from '@/types';
 import {
   Calendar,
   User,
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useState } from 'react';
 import SubtaskDetailDialog from './SubtaskDetailDialog';
+import EditSubtaskModal from './EditSubtaskModal';
 
 type ExtendedTask = Task;
 
@@ -31,6 +32,7 @@ type TaskCardProps = {
   onDragStart?: (task: ExtendedTask) => void;
   onViewDetails?: (task: ExtendedTask) => void;
   onAddSubtask?: (task: ExtendedTask) => void;
+  onRefresh?: () => void;
 };
 
 export default function TaskCard({
@@ -41,8 +43,10 @@ export default function TaskCard({
   onDragStart,
   onViewDetails,
   onAddSubtask,
+  onRefresh,
 }: TaskCardProps) {
   const [selectedSubtask, setSelectedSubtask] = useState<Subtask | null>(null);
+  const [editingSubtask, setEditingSubtask] = useState<Subtask | null>(null);
 
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
@@ -65,6 +69,32 @@ export default function TaskCard({
   const isOverdue = (dueDate: string | null) => {
     if (!dueDate) return false;
     return new Date(dueDate) < new Date();
+  };
+
+  const getSubtaskStatusBadgeColor = (status: string) => {
+    switch (status) {
+      case SubtaskStatus.DONE:
+        return 'bg-green-100 text-green-800 hover:bg-green-200';
+      case SubtaskStatus.IN_PROGRESS:
+        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+      case SubtaskStatus.TODO:
+        return 'bg-orange-100 text-orange-800 hover:bg-orange-200';
+      default:
+        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+    }
+  };
+
+  const getSubtaskStatusLabel = (status: string) => {
+    switch (status) {
+      case SubtaskStatus.DONE:
+        return 'Done';
+      case SubtaskStatus.IN_PROGRESS:
+        return 'In Progress';
+      case SubtaskStatus.TODO:
+        return 'To Do';
+      default:
+        return 'Unknown';
+    }
   };
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -202,43 +232,46 @@ export default function TaskCard({
                         subtask.title || subtask.subtask_title || 'Untitled Subtask';
 
                       return (
-                        <button
+                        <div
                           key={subtask.subtask_id}
                           className='flex items-start space-x-2 text-xs w-full hover:bg-gray-100 p-1.5 rounded-md transition-colors'
-                          onClick={() => setSelectedSubtask(subtask)}
                         >
-                          <div className='flex-shrink-0 mt-1'>
-                            <input
-                              type='checkbox'
-                              checked={isCompleted}
-                              className='h-3 w-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500'
-                              readOnly
-                              onClick={(e) => e.stopPropagation()}
-                            />
-                          </div>
-                          <div className='flex-grow text-left'>
-                            <div
-                              className={`font-medium ${isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'}`}
-                            >
-                              {subtaskTitle}
+                          <button
+                            className='flex-grow text-left flex items-start justify-between w-full'
+                            onClick={() => setEditingSubtask(subtask)}
+                          >
+                            <div className='flex-grow'>
+                              <div className='flex items-center justify-between mb-1'>
+                                <div
+                                  className={`font-medium ${isCompleted ? 'text-gray-400 line-through' : 'text-gray-700'}`}
+                                >
+                                  {subtaskTitle}
+                                </div>
+                                <Badge
+                                  variant="secondary"
+                                  className={`text-xs ${getSubtaskStatusBadgeColor(subtask.status)}`}
+                                >
+                                  {getSubtaskStatusLabel(subtask.status)}
+                                </Badge>
+                              </div>
+                              {subtask?.assigned_user_name && (
+                                <div className='text-gray-400 text-xs'>
+                                  {subtask.assigned_user_name}
+                                </div>
+                              )}
+                              {subtask.images && subtask.images.length > 0 && (
+                                <div className='flex items-center mt-1'>
+                                  <ImageIcon className='h-3 w-3 text-blue-500 mr-1' />
+                                  <span className='text-blue-500 text-xs'>
+                                    {subtask.images.length} image
+                                    {subtask.images.length > 1 ? 's' : ''}
+                                  </span>
+                                </div>
+                              )}
                             </div>
-                            {subtask?.assigned_user_name && (
-                              <div className='text-gray-400 text-xs'>
-                                {subtask.assigned_user_name}
-                              </div>
-                            )}
-                            {subtask.images && subtask.images.length > 0 && (
-                              <div className='flex items-center mt-1'>
-                                <ImageIcon className='h-3 w-3 text-blue-500 mr-1' />
-                                <span className='text-blue-500 text-xs'>
-                                  {subtask.images.length} image
-                                  {subtask.images.length > 1 ? 's' : ''}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          <ChevronRight className='h-4 w-4 text-gray-400 flex-shrink-0 self-center' />
-                        </button>
+                            <ChevronRight className='h-4 w-4 text-gray-400 flex-shrink-0 self-center' />
+                          </button>
+                        </div>
                       );
                     })}
                   {onAddSubtask && (
@@ -274,6 +307,18 @@ export default function TaskCard({
                 subtask={selectedSubtask}
                 open={selectedSubtask !== null}
                 onOpenChange={(open) => !open && setSelectedSubtask(null)}
+              />
+            )}
+
+            {editingSubtask && (
+              <EditSubtaskModal
+                subtask={editingSubtask}
+                open={editingSubtask !== null}
+                onOpenChange={(open) => !open && setEditingSubtask(null)}
+                onSuccess={() => {
+                  onRefresh?.();
+                  setEditingSubtask(null);
+                }}
               />
             )}
           </div>

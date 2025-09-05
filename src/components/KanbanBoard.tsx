@@ -165,6 +165,7 @@ export default function KanbanBoard({ onCreateTask, onEditTask, onAddSubtask }: 
           onTaskDrop={handleTaskDrop}
           onTaskViewDetails={handleViewTaskDetails}
           onTaskAddSubtask={onAddSubtask}
+          onRefresh={fetchTasks}
         />
 
         <KanbanColumn
@@ -177,6 +178,7 @@ export default function KanbanBoard({ onCreateTask, onEditTask, onAddSubtask }: 
           onTaskDrop={handleTaskDrop}
           onTaskViewDetails={handleViewTaskDetails}
           onTaskAddSubtask={onAddSubtask}
+          onRefresh={fetchTasks}
         />
 
         <KanbanColumn
@@ -189,6 +191,7 @@ export default function KanbanBoard({ onCreateTask, onEditTask, onAddSubtask }: 
           onTaskDrop={handleTaskDrop}
           onTaskViewDetails={handleViewTaskDetails}
           onTaskAddSubtask={onAddSubtask}
+          onRefresh={fetchTasks}
         />
       </div>
 
