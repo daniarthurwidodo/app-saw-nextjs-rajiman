@@ -1,0 +1,202 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+export default function Dashboard() {
+  return (
+    <div className="container mx-auto p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Claude Code Dashboard</h1>
+        <Button>New Task</Button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Schools</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <polyline points="9,22 9,12 15,12 15,22" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">12</div>
+            <p className="text-xs text-muted-foreground">
+              +2 from last month
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Tasks</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="m22 21-3-3" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">47</div>
+            <p className="text-xs text-muted-foreground">
+              +12% from last week
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completed Tasks</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <rect width="20" height="14" x="2" y="5" rx="2" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">234</div>
+            <p className="text-xs text-muted-foreground">
+              +19% from last month
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Users Online</CardTitle>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              className="h-4 w-4 text-muted-foreground"
+            >
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="m22 21-3-3" />
+            </svg>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">18</div>
+            <p className="text-xs text-muted-foreground">
+              +5 from yesterday
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Tasks</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div>
+                  <p className="font-medium">Setup New School Registration</p>
+                  <p className="text-sm text-muted-foreground">Assigned to Ahmad Suharto</p>
+                </div>
+                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                  In Progress
+                </span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div>
+                  <p className="font-medium">Update Student Database</p>
+                  <p className="text-sm text-muted-foreground">Assigned to Maria Santos</p>
+                </div>
+                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                  Todo
+                </span>
+              </div>
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div>
+                  <p className="font-medium">Generate Monthly Report</p>
+                  <p className="text-sm text-muted-foreground">Assigned to John Doe</p>
+                </div>
+                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                  Done
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>School Performance</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">SDN 01 Jakarta</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-24 bg-muted rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full w-[85%]"></div>
+                  </div>
+                  <span className="text-sm">85%</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">SMP 05 Bandung</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-24 bg-muted rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full w-[72%]"></div>
+                  </div>
+                  <span className="text-sm">72%</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">SMA 03 Surabaya</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-24 bg-muted rounded-full h-2">
+                    <div className="bg-yellow-500 h-2 rounded-full w-[68%]"></div>
+                  </div>
+                  <span className="text-sm">68%</span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">SDN 12 Medan</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-24 bg-muted rounded-full h-2">
+                    <div className="bg-red-500 h-2 rounded-full w-[45%]"></div>
+                  </div>
+                  <span className="text-sm">45%</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

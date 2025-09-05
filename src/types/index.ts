@@ -1,0 +1,147 @@
+// User Roles
+export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
+  ADMIN = 'admin',
+  KEPALA_SEKOLAH = 'kepala_sekolah',
+  USER = 'user'
+}
+
+// Task Status
+export enum TaskStatus {
+  TODO = 'todo',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done'
+}
+
+// Task Priority
+export enum TaskPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high'
+}
+
+// Approval Status
+export enum ApprovalStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected'
+}
+
+// Document Types
+export enum DocumentType {
+  DOCUMENTATION = 'documentation',
+  PAYMENT = 'payment',
+  ATTENDANCE = 'attendance'
+}
+
+// User Interface Types
+export interface User {
+  user_id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+  school_id?: number;
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+}
+
+export interface School {
+  sekolah_id: number;
+  nama_sekolah: string;
+  alamat?: string;
+  kontak?: string;
+  kepala_sekolah_id?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Task {
+  task_id: number;
+  title: string;
+  description?: string;
+  assigned_to?: number;
+  created_by?: number;
+  status: TaskStatus;
+  priority: TaskPriority;
+  due_date?: string;
+  approval_status?: ApprovalStatus;
+  approved_by_user_id?: number;
+  approval_date?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Subtask {
+  subtask_id: number;
+  relation_task_id: number;
+  subtask_title: string;
+  subtask_description?: string;
+  assigned_to?: number;
+  subtask_status: TaskStatus;
+  subtask_comment?: string;
+  subtask_date?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Documentation {
+  doc_id: number;
+  subtask_id?: number;
+  doc_type: DocumentType;
+  file_path?: string;
+  file_name?: string;
+  uploaded_by?: number;
+  uploaded_at: string;
+}
+
+export interface Report {
+  report_id: number;
+  task_id?: number;
+  created_by?: number;
+  report_data?: object;
+  rating?: number;
+  comment?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Criteria {
+  criteria_id: number;
+  criteria_name: string;
+  weight: number;
+  description?: string;
+  created_by?: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// API Response Types
+export interface ApiResponse<T = any> {
+  success: boolean;
+  message: string;
+  data?: T;
+  error?: string;
+}
+
+// Authentication Types
+export interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+}
+
+// Dashboard Types
+export interface DashboardStats {
+  totalSchools: number;
+  activeTasks: number;
+  completedTasks: number;
+  usersOnline: number;
+}
