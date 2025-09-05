@@ -163,7 +163,7 @@ export default function SubtaskManager({ taskId, taskTitle }: SubtaskManagerProp
     
     setSubmitting(true);
     try {
-      const payload: any = {};
+      const payload: Partial<Subtask> = {};
       
       if (formData.subtask_title !== editingSubtask.subtask_title) {
         payload.subtask_title = formData.subtask_title;

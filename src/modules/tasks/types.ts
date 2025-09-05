@@ -16,6 +16,18 @@ export enum ApprovalStatus {
   REJECTED = 'rejected'
 }
 
+export interface Subtask {
+  subtask_id: number;
+  relation_task_id: number;
+  subtask_title: string;
+  subtask_description?: string;
+  assigned_to?: number;
+  assigned_user_name?: string;
+  is_completed: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Task {
   task_id: number;
   title: string;
@@ -33,6 +45,10 @@ export interface Task {
   approval_date: string | null;
   created_at: string;
   updated_at: string;
+  // Subtask-related fields
+  subtasks?: Subtask[];
+  subtasks_count?: number;
+  completed_subtasks?: number;
 }
 
 export interface CreateTaskRequest {

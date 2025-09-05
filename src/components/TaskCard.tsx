@@ -3,26 +3,42 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Task, TaskPriority } from "@/types";
-import { Calendar, User, MoreHorizontal, Plus } from "lucide-react";
+import { Task, TaskPriority, Subtask, TaskStatus } from "@/types";
+import { Calendar, User, MoreHorizontal, Plus, ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+import SubtaskDetailDialog from "./SubtaskDetailDialog";
 
-interface TaskCardProps {
-  task: Task;
-  onEdit?: (task: Task) => void;
+type ExtendedSubtask = Subtask & {
+  assigned_user_name?: string;
+};
+
+type ExtendedTask = Task & {
+  assigned_user_name?: string;
+  created_by_name?: string;
+  subtasks_count?: number;
+  completed_subtasks?: number;
+  subtasks?: ExtendedSubtask[];
+};
+
+type TaskCardProps = {
+  task: ExtendedTask;
+  onEdit?: (task: ExtendedTask) => void;
   onDelete?: (taskId: number) => void;
   onStatusChange?: (taskId: number, newStatus: string) => void;
-  onDragStart?: (task: Task) => void;
-  onViewDetails?: (task: Task) => void;
-  onAddSubtask?: (task: Task) => void;
-}
+  onDragStart?: (task: ExtendedTask) => void;
+  onViewDetails?: (task: ExtendedTask) => void;
+  onAddSubtask?: (task: ExtendedTask) => void;
+};
 
 export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onDragStart, onViewDetails, onAddSubtask }: TaskCardProps) {
+  const [selectedSubtask, setSelectedSubtask] = useState<ExtendedSubtask | null>(null);
+
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
       case TaskPriority.HIGH:
@@ -157,8 +173,91 @@ export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onDra
             </div>
           )}
           
-          <div className="text-xs text-gray-500 mt-2">
-            Created by {task.created_by_name || 'Unknown'}
+          <div className="space-y-3 mt-3">
+            <div className="text-xs text-gray-500 w-full">
+              Created by {task.created_by_name || 'Unknown'}
+            </div>
+
+            {task.subtasks && task.subtasks.length > 0 ? (
+              <>
+                <div className="flex items-center text-xs text-gray-600">
+                  <div className="w-full bg-gray-200 rounded-full h-1.5">
+                    <div 
+                      className="bg-blue-600 h-1.5 rounded-full" 
+                      style={{ 
+                        width: `${((task.completed_subtasks || 0) / (task.subtasks_count ?? task.subtasks?.length ?? 1)) * 100}%`
+                      }}
+                    ></div>
+                  </div>
+                  <span className="ml-2">
+                    {task.completed_subtasks || 0}/{task.subtasks_count || task.subtasks.length}
+                  </span>
+                </div>
+
+                <div className="space-y-2 border rounded-lg p-2 bg-gray-50">
+                  {task.subtasks.filter(subtask => subtask !== null).map((subtask) => (
+                    <button 
+                      key={subtask.subtask_id} 
+                      className="flex items-start space-x-2 text-xs w-full hover:bg-gray-100 p-1.5 rounded-md transition-colors"
+                      onClick={() => setSelectedSubtask(subtask)}
+                    >
+                      <div className="flex-shrink-0 mt-1">
+                        <input
+                          type="checkbox"
+                          checked={subtask?.is_completed || false}
+                          className="h-3 w-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          readOnly
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                      <div className="flex-grow text-left">
+                        <div className={`font-medium ${subtask.is_completed ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                          {subtask?.subtask_title || 'Untitled Subtask'}
+                        </div>
+                        {subtask?.assigned_user_name && (
+                          <div className="text-gray-400 text-xs">
+                            {subtask.assigned_user_name}
+                          </div>
+                        )}
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0 self-center" />
+                    </button>
+                  ))}
+                  {onAddSubtask && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAddSubtask(task);
+                      }}
+                      className="flex items-center justify-center w-full text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-md transition-colors mt-2"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add Subtask
+                    </button>
+                  )}
+                </div>
+              </>
+            ) : (
+              onAddSubtask && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-full h-7 text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200"
+                  onClick={() => onAddSubtask(task)}
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add Subtask
+                </Button>
+              )
+            )}
+            
+            {selectedSubtask && (
+              <SubtaskDetailDialog
+                subtask={selectedSubtask}
+                open={selectedSubtask !== null}
+                onOpenChange={(open) => !open && setSelectedSubtask(null)}
+              />
+            )}
           </div>
         </div>
       </CardContent>

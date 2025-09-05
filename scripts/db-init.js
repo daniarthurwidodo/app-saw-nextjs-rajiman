@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const mysql = require('mysql2/promise');
-const dotenv = require('dotenv');
-const path = require('path');
+import { createConnection } from 'mysql2/promise';
+import { config as _config } from 'dotenv';
+import { join } from 'path';
 
 // Load environment variables
-dotenv.config({ path: path.join(__dirname, '../.env.local') });
+_config({ path: join(__dirname, '../.env.local') });
 
 const createTablesSQL = `
 -- Users Table
@@ -64,13 +64,13 @@ CREATE TABLE IF NOT EXISTS subtasks (
   subtask_title VARCHAR(255) NOT NULL,
   subtask_description TEXT,
   assigned_to INT,
-  subtask_status ENUM('todo', 'in_progress', 'done') NOT NULL DEFAULT 'todo',
-  subtask_comment TEXT,
-  subtask_date DATE,
+  is_completed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_relation_task (relation_task_id),
-  INDEX idx_assigned_to (assigned_to)
+  INDEX idx_assigned_to (assigned_to),
+  FOREIGN KEY (relation_task_id) REFERENCES tasks(task_id) ON DELETE CASCADE,
+  FOREIGN KEY (assigned_to) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
 -- Documentation Table
@@ -164,7 +164,7 @@ async function initializeDatabase() {
   console.log(`📍 Database: ${config.database}`);
 
   try {
-    const connection = await mysql.createConnection(config);
+    const connection = await createConnection(config);
     console.log('✅ Connected to database');
 
     // Execute all table creation statements - use query() for DDL statements

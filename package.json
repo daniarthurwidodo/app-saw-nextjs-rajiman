@@ -14,7 +14,8 @@
     "db:reset": "node scripts/db-reset.js",
     "db:setup": "npm run db:create && npm run db:init && npm run db:migrate && npm run db:seed",
     "db:profile": "node scripts/db-profile-migration.js",
-    "db:settings": "node scripts/db-settings-migration.js"
+    "db:settings": "node scripts/db-settings-migration.js",
+    "db:subtasks": "node scripts/db-subtask-migration.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -44,6 +45,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
+    "quick-erd": "^4.28.1",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5"

@@ -18,8 +18,8 @@ export class TasksService {
     pagination: PaginationParams = { page: 1, limit: 10 }
   ): Promise<TasksListResponse> {
     try {
-      let whereConditions: string[] = ['1=1'];
-      const params: any[] = [];
+      const whereConditions: string[] = ['1=1'];
+      const params: (string | number | null)[] = [];
 
       // Apply filters
       if (filters.status) {
@@ -123,31 +123,67 @@ export class TasksService {
   static async getTasksByStatus(): Promise<TasksByStatusResponse> {
     try {
       const tasksQuery = `
-        SELECT 
-          t.task_id,
-          t.title,
-          t.description,
-          t.assigned_to,
-          assigned_user.name as assigned_user_name,
-          t.created_by,
-          creator.name as created_by_name,
-          t.status,
-          t.priority,
-          t.due_date,
-          t.approval_status,
-          t.approved_by_user_id,
-          approver.name as approved_by_name,
-          t.approval_date,
-          t.created_at,
-          t.updated_at
-        FROM tasks t
-        LEFT JOIN users assigned_user ON t.assigned_to = assigned_user.user_id
-        LEFT JOIN users creator ON t.created_by = creator.user_id
-        LEFT JOIN users approver ON t.approved_by_user_id = approver.user_id
-        ORDER BY t.created_at DESC
+        WITH TasksWithSubtasks AS (
+          SELECT 
+            t.task_id,
+            t.title,
+            t.description,
+            t.assigned_to,
+            assigned_user.name as assigned_user_name,
+            t.created_by,
+            creator.name as created_by_name,
+            t.status,
+            t.priority,
+            t.due_date,
+            t.approval_status,
+            t.approved_by_user_id,
+            approver.name as approved_by_name,
+            t.approval_date,
+            t.created_at,
+            t.updated_at,
+            COUNT(s.subtask_id) as subtasks_count,
+            SUM(CASE WHEN s.is_completed THEN 1 ELSE 0 END) as completed_subtasks,
+            JSON_ARRAYAGG(
+              CASE WHEN s.subtask_id IS NOT NULL THEN
+                JSON_OBJECT(
+                  'subtask_id', s.subtask_id,
+                  'relation_task_id', s.relation_task_id,
+                  'subtask_title', s.subtask_title,
+                  'subtask_description', s.subtask_description,
+                  'assigned_to', s.assigned_to,
+                  'assigned_user_name', subtask_user.name,
+                  'is_completed', s.is_completed,
+                  'created_at', s.created_at,
+                  'updated_at', s.updated_at
+                )
+              ELSE NULL END
+            ) as subtasks
+          FROM tasks t
+          LEFT JOIN users assigned_user ON t.assigned_to = assigned_user.user_id
+          LEFT JOIN users creator ON t.created_by = creator.user_id
+          LEFT JOIN users approver ON t.approved_by_user_id = approver.user_id
+          LEFT JOIN subtasks s ON t.task_id = s.relation_task_id
+          LEFT JOIN users subtask_user ON s.assigned_to = subtask_user.user_id
+          GROUP BY t.task_id
+        )
+        SELECT *,
+          CASE 
+            WHEN subtasks = JSON_ARRAY() THEN NULL 
+            ELSE subtasks 
+          END as subtasks
+        FROM TasksWithSubtasks
+        ORDER BY created_at DESC
       `;
 
-      const allTasks = await query(tasksQuery) as Task[];
+      const rawTasks = await query(tasksQuery) as any[];
+      
+      // Process the tasks to parse the JSON subtasks field
+      const allTasks = rawTasks.map(task => ({
+        ...task,
+        subtasks: task.subtasks || [], // Already JSON from MySQL JSON_ARRAYAGG
+        subtasks_count: Number(task.subtasks_count || 0),
+        completed_subtasks: Number(task.completed_subtasks || 0)
+      })) as Task[];
 
       const tasksByStatus = {
         todo: allTasks.filter(task => task.status === 'todo'),
@@ -269,7 +305,7 @@ export class TasksService {
           currentTime,
           currentTime
         ]
-      ) as any;
+      ) as { insertId: number };
 
       // Get the created task
       const newTask = await this.getTaskById(result.insertId);

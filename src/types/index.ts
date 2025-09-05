@@ -78,9 +78,8 @@ export interface Subtask {
   subtask_title: string;
   subtask_description?: string;
   assigned_to?: number;
-  subtask_status: TaskStatus;
-  subtask_comment?: string;
-  subtask_date?: string;
+  assigned_user_name?: string;
+  is_completed: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -118,7 +117,7 @@ export interface Criteria {
 }
 
 // API Response Types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;
