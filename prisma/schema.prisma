@@ -1,0 +1,196 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://root:root@localhost:3306/saw_app_db"
+}
+
+model User {
+  id               Int             @id @default(autoincrement()) @map("user_id")
+  name             String          @db.VarChar(255)
+  email            String          @unique(map: "email") @db.VarChar(255)
+  password         String          @db.VarChar(255)
+  role             Role            @default(user)
+  schoolId         Int?            @map("school_id")
+  createdAt        DateTime?       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt        DateTime?       @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+  isActive         Boolean?        @default(true) @map("is_active")
+  criteria         Criteria[]
+  uploadedDocs     Documentation[] @relation("UploadedByUser")
+  createdReports   Report[]        @relation("CreatedByUser")
+  managedSchool    School[]        @relation("SchoolPrincipal")
+  assignedSubtasks Subtask[]       @relation("SubtaskAssignedToUser")
+  approvedTasks    Task[]          @relation("ApprovedByUser")
+  assignedTasks    Task[]          @relation("AssignedToUser")
+  createdTasks     Task[]          @relation("CreatedByUser")
+
+  @@index([email], map: "idx_email")
+  @@index([role], map: "idx_role")
+  @@index([schoolId], map: "idx_school_id")
+  @@map("users")
+}
+
+model School {
+  id          Int       @id @default(autoincrement()) @map("sekolah_id")
+  name        String    @map("nama_sekolah") @db.VarChar(255)
+  address     String?   @map("alamat") @db.Text
+  contact     String?   @map("kontak") @db.VarChar(100)
+  principalId Int?      @map("kepala_sekolah_id")
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+  principal   User?     @relation("SchoolPrincipal", fields: [principalId], references: [id], onUpdate: NoAction, map: "fk_schools_kepala_sekolah")
+
+  @@index([principalId], map: "idx_kepala_sekolah")
+  @@map("schools")
+}
+
+model Task {
+  id               Int             @id @default(autoincrement()) @map("task_id")
+  title            String          @db.VarChar(255)
+  description      String?         @db.Text
+  assignedTo       Int?            @map("assigned_to")
+  createdBy        Int?            @map("created_by")
+  status           TaskStatus      @default(todo)
+  priority         Priority        @default(medium)
+  dueDate          DateTime?       @map("due_date") @db.Date
+  approvalStatus   ApprovalStatus? @default(pending) @map("approval_status")
+  approvedByUserId Int?            @map("approved_by_user_id")
+  approvalDate     DateTime?       @map("approval_date") @db.Timestamp(0)
+  createdAt        DateTime?       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt        DateTime?       @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+  reports          Report[]
+  subtasks         Subtask[]
+  approver         User?           @relation("ApprovedByUser", fields: [approvedByUserId], references: [id], onUpdate: NoAction, map: "fk_tasks_approved_by")
+  assignedUser     User?           @relation("AssignedToUser", fields: [assignedTo], references: [id], onUpdate: NoAction, map: "fk_tasks_assigned_to")
+  creator          User?           @relation("CreatedByUser", fields: [createdBy], references: [id], onUpdate: NoAction, map: "fk_tasks_created_by")
+
+  @@index([approvedByUserId], map: "fk_tasks_approved_by")
+  @@index([assignedTo], map: "idx_assigned_to")
+  @@index([createdBy], map: "idx_created_by")
+  @@index([priority], map: "idx_priority")
+  @@index([status], map: "idx_status")
+  @@map("tasks")
+}
+
+model Subtask {
+  id             Int             @id @default(autoincrement()) @map("subtask_id")
+  relationTaskId Int             @map("relation_task_id")
+  title          String          @map("subtask_title") @db.VarChar(255)
+  description    String?         @map("subtask_description") @db.Text
+  assignedTo     Int?            @map("assigned_to")
+  isCompleted    Boolean?        @default(false) @map("is_completed")
+  createdAt      DateTime?       @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt      DateTime?       @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+  documentation  Documentation[]
+  assignedUser   User?           @relation("SubtaskAssignedToUser", fields: [assignedTo], references: [id], onUpdate: NoAction, map: "fk_subtasks_assigned_to")
+  task           Task            @relation(fields: [relationTaskId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_subtasks_task")
+
+  @@index([assignedTo], map: "idx_assigned_to")
+  @@index([relationTaskId], map: "idx_relation_task")
+  @@map("subtasks")
+}
+
+model Documentation {
+  id         Int       @id @default(autoincrement()) @map("doc_id")
+  subtaskId  Int?      @map("subtask_id")
+  docType    DocType   @map("doc_type")
+  filePath   String?   @map("file_path") @db.VarChar(500)
+  fileName   String?   @map("file_name") @db.VarChar(255)
+  uploadedBy Int?      @map("uploaded_by")
+  uploadedAt DateTime? @default(now()) @map("uploaded_at") @db.Timestamp(0)
+  subtask    Subtask?  @relation(fields: [subtaskId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_documentation_subtask")
+  uploader   User?     @relation("UploadedByUser", fields: [uploadedBy], references: [id], onUpdate: NoAction, map: "fk_documentation_uploaded_by")
+
+  @@index([uploadedBy], map: "fk_documentation_uploaded_by")
+  @@index([docType], map: "idx_doc_type")
+  @@index([subtaskId], map: "idx_subtask_id")
+  @@map("documentation")
+}
+
+model Report {
+  id         Int       @id @default(autoincrement()) @map("report_id")
+  taskId     Int?      @map("task_id")
+  createdBy  Int?      @map("created_by")
+  reportData Json?     @map("report_data")
+  rating     Int?      @db.TinyInt
+  comment    String?   @db.Text
+  createdAt  DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+  creator    User?     @relation("CreatedByUser", fields: [createdBy], references: [id], onUpdate: NoAction, map: "fk_reports_created_by")
+  task       Task?     @relation(fields: [taskId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_reports_task")
+
+  @@index([createdBy], map: "idx_created_by")
+  @@index([taskId], map: "idx_task_id")
+  @@map("reports")
+}
+
+model Criteria {
+  id          Int       @id @default(autoincrement()) @map("criteria_id")
+  name        String    @map("criteria_name") @db.VarChar(255)
+  weight      Decimal   @db.Decimal(5, 2)
+  description String?   @db.Text
+  createdBy   Int?      @map("created_by")
+  isActive    Boolean?  @default(true) @map("is_active")
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+  users       User?     @relation(fields: [createdBy], references: [id], onUpdate: NoAction, map: "fk_criteria_created_by")
+
+  @@index([isActive], map: "idx_active")
+  @@index([createdBy], map: "idx_created_by")
+  @@map("criteria")
+}
+
+model AppSetting {
+  id           Int                        @id @default(autoincrement()) @map("setting_id")
+  key          String                     @unique(map: "setting_key") @map("setting_key") @db.VarChar(100)
+  value        String?                    @map("setting_value") @db.Text
+  setting_type app_settings_setting_type? @default(string)
+  description  String?                    @db.Text
+  category     String?                    @default("general") @db.VarChar(50)
+  createdAt    DateTime?                  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime?                  @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@index([category], map: "idx_category")
+  @@index([key], map: "idx_setting_key")
+  @@map("app_settings")
+}
+
+enum Role {
+  super_admin
+  admin
+  kepala_sekolah
+  user
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  done
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+enum ApprovalStatus {
+  pending
+  approved
+  rejected
+}
+
+enum DocType {
+  documentation
+  payment
+  attendance
+}
+
+enum app_settings_setting_type {
+  string
+  number
+  boolean
+  json
+}
