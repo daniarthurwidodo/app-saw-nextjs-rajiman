@@ -118,7 +118,7 @@ export class ProfileValidator {
     if (currentPasswordError) {
       errors.push({
         field: 'currentPassword',
-        message: 'Current password is required'
+        message: 'Current password is required',
       });
     }
 
@@ -126,26 +126,26 @@ export class ProfileValidator {
     if (newPasswordError) {
       errors.push({
         field: 'newPassword',
-        message: newPasswordError.message.replace('Password', 'New password')
+        message: newPasswordError.message.replace('Password', 'New password'),
       });
     }
 
     if (!data.confirmPassword) {
       errors.push({
         field: 'confirmPassword',
-        message: 'Password confirmation is required'
+        message: 'Password confirmation is required',
       });
     } else if (data.newPassword !== data.confirmPassword) {
       errors.push({
         field: 'confirmPassword',
-        message: 'Password confirmation does not match'
+        message: 'Password confirmation does not match',
       });
     }
 
     if (data.currentPassword === data.newPassword) {
       errors.push({
         field: 'newPassword',
-        message: 'New password must be different from current password'
+        message: 'New password must be different from current password',
       });
     }
 
@@ -154,7 +154,7 @@ export class ProfileValidator {
 
   static validateUserId(userId: string | number): number {
     const id = typeof userId === 'string' ? parseInt(userId) : userId;
-    
+
     if (isNaN(id) || id <= 0) {
       throw new ProfileError('Invalid user ID', 400, 'INVALID_USER_ID');
     }

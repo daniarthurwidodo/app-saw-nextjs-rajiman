@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs';
 import { query } from '@/lib/db';
-import { 
-  UserProfile, 
-  UpdateProfileRequest, 
+import {
+  UserProfile,
+  UpdateProfileRequest,
   ChangePasswordRequest,
   ProfileResponse,
-  ProfileError 
+  ProfileError,
 } from './types';
 import { ProfileValidator } from './validation';
 
@@ -14,7 +14,8 @@ export class ProfileService {
 
   static async getProfile(userId: number): Promise<ProfileResponse> {
     try {
-      const users = await query(`
+      const users = (await query(
+        `
         SELECT 
           u.user_id,
           u.name,
@@ -32,7 +33,9 @@ export class ProfileService {
         FROM users u
         LEFT JOIN schools s ON u.school_id = s.sekolah_id
         WHERE u.user_id = ? AND u.is_active = 1
-      `, [userId]) as UserProfile[];
+      `,
+        [userId]
+      )) as UserProfile[];
 
       if (users.length === 0) {
         throw new ProfileError('User not found', 404, 'USER_NOT_FOUND');
@@ -41,30 +44,28 @@ export class ProfileService {
       return {
         success: true,
         message: 'Profile retrieved successfully',
-        user: users[0]
+        user: users[0],
       };
-
     } catch (error) {
       if (error instanceof ProfileError) {
         throw error;
       }
 
       console.error('Get profile service error:', error);
-      throw new ProfileError(
-        'An error occurred while fetching profile',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new ProfileError('An error occurred while fetching profile', 500, 'INTERNAL_ERROR');
     }
   }
 
-  static async updateProfile(userId: number, updateData: UpdateProfileRequest): Promise<ProfileResponse> {
+  static async updateProfile(
+    userId: number,
+    updateData: UpdateProfileRequest
+  ): Promise<ProfileResponse> {
     try {
       // Validate input
       const validationErrors = ProfileValidator.validateUpdateProfile(updateData);
       if (validationErrors.length > 0) {
         throw new ProfileError(
-          `Validation failed: ${validationErrors.map(e => e.message).join(', ')}`,
+          `Validation failed: ${validationErrors.map((e) => e.message).join(', ')}`,
           400,
           'VALIDATION_ERROR'
         );
@@ -78,17 +79,13 @@ export class ProfileService {
 
       // Check if email already exists (if email is being updated)
       if (sanitizedData.email) {
-        const existingUsers = await query(
+        const existingUsers = (await query(
           'SELECT user_id FROM users WHERE email = ? AND user_id != ? AND is_active = 1',
           [sanitizedData.email, userId]
-        ) as any[];
+        )) as any[];
 
         if (existingUsers.length > 0) {
-          throw new ProfileError(
-            'Email already exists',
-            409,
-            'EMAIL_EXISTS'
-          );
+          throw new ProfileError('Email already exists', 409, 'EMAIL_EXISTS');
         }
       }
 
@@ -96,7 +93,7 @@ export class ProfileService {
       const updateFields: string[] = [];
       const updateParams: any[] = [];
 
-      Object.keys(sanitizedData).forEach(key => {
+      Object.keys(sanitizedData).forEach((key) => {
         if (sanitizedData[key as keyof UpdateProfileRequest] !== undefined) {
           updateFields.push(`${key} = ?`);
           updateParams.push(sanitizedData[key as keyof UpdateProfileRequest]);
@@ -104,11 +101,7 @@ export class ProfileService {
       });
 
       if (updateFields.length === 0) {
-        throw new ProfileError(
-          'No fields to update',
-          400,
-          'NO_UPDATE_FIELDS'
-        );
+        throw new ProfileError('No fields to update', 400, 'NO_UPDATE_FIELDS');
       }
 
       // Add updated_at
@@ -132,40 +125,37 @@ export class ProfileService {
       return {
         success: true,
         message: 'Profile updated successfully',
-        user: updatedProfile.user
+        user: updatedProfile.user,
       };
-
     } catch (error) {
       if (error instanceof ProfileError) {
         throw error;
       }
 
       console.error('Update profile service error:', error);
-      throw new ProfileError(
-        'An error occurred while updating profile',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new ProfileError('An error occurred while updating profile', 500, 'INTERNAL_ERROR');
     }
   }
 
-  static async changePassword(userId: number, passwordData: ChangePasswordRequest): Promise<{ success: boolean; message: string }> {
+  static async changePassword(
+    userId: number,
+    passwordData: ChangePasswordRequest
+  ): Promise<{ success: boolean; message: string }> {
     try {
       // Validate input
       const validationErrors = ProfileValidator.validateChangePassword(passwordData);
       if (validationErrors.length > 0) {
         throw new ProfileError(
-          `Validation failed: ${validationErrors.map(e => e.message).join(', ')}`,
+          `Validation failed: ${validationErrors.map((e) => e.message).join(', ')}`,
           400,
           'VALIDATION_ERROR'
         );
       }
 
       // Get current user with password
-      const users = await query(
-        'SELECT password FROM users WHERE user_id = ? AND is_active = 1',
-        [userId]
-      ) as any[];
+      const users = (await query('SELECT password FROM users WHERE user_id = ? AND is_active = 1', [
+        userId,
+      ])) as any[];
 
       if (users.length === 0) {
         throw new ProfileError('User not found', 404, 'USER_NOT_FOUND');
@@ -176,11 +166,7 @@ export class ProfileService {
       // Verify current password
       const isValidPassword = await bcrypt.compare(passwordData.currentPassword, user.password);
       if (!isValidPassword) {
-        throw new ProfileError(
-          'Current password is incorrect',
-          400,
-          'INVALID_CURRENT_PASSWORD'
-        );
+        throw new ProfileError('Current password is incorrect', 400, 'INVALID_CURRENT_PASSWORD');
       }
 
       // Hash new password
@@ -195,20 +181,15 @@ export class ProfileService {
 
       return {
         success: true,
-        message: 'Password changed successfully'
+        message: 'Password changed successfully',
       };
-
     } catch (error) {
       if (error instanceof ProfileError) {
         throw error;
       }
 
       console.error('Change password service error:', error);
-      throw new ProfileError(
-        'An error occurred while changing password',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new ProfileError('An error occurred while changing password', 500, 'INTERNAL_ERROR');
     }
   }
 
@@ -230,9 +211,8 @@ export class ProfileService {
       return {
         success: true,
         message: 'Profile image updated successfully',
-        user: updatedProfile.user
+        user: updatedProfile.user,
       };
-
     } catch (error) {
       if (error instanceof ProfileError) {
         throw error;

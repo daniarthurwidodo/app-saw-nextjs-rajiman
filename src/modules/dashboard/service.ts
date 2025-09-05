@@ -11,37 +11,34 @@ export class DashboardService {
   static async getDashboardStats(): Promise<DashboardStats> {
     try {
       // Get total users
-      const totalUsersResult = await query(
-        'SELECT COUNT(*) as count FROM users'
-      ) as any[];
+      const totalUsersResult = (await query('SELECT COUNT(*) as count FROM users')) as any[];
       const totalUsers = totalUsersResult[0]?.count || 0;
 
       // Get active users (is_active = true)
-      const activeUsersResult = await query(
+      const activeUsersResult = (await query(
         'SELECT COUNT(*) as count FROM users WHERE is_active = 1'
-      ) as any[];
+      )) as any[];
       const activeUsers = activeUsersResult[0]?.count || 0;
 
-
       // Get active tasks (not done)
-      const activeTasksResult = await query(
+      const activeTasksResult = (await query(
         'SELECT COUNT(*) as count FROM tasks WHERE status != ?',
         ['done']
-      ) as any[];
+      )) as any[];
       const activeTasks = activeTasksResult[0]?.count || 0;
 
       // Get completed tasks
-      const completedTasksResult = await query(
+      const completedTasksResult = (await query(
         'SELECT COUNT(*) as count FROM tasks WHERE status = ?',
         ['done']
-      ) as any[];
+      )) as any[];
       const completedTasks = completedTasksResult[0]?.count || 0;
 
       return {
         totalUsers,
         activeUsers,
         activeTasks,
-        completedTasks
+        completedTasks,
       };
     } catch (error) {
       console.error('Dashboard service error:', error);
@@ -50,7 +47,7 @@ export class DashboardService {
         totalUsers: 0,
         activeUsers: 0,
         activeTasks: 0,
-        completedTasks: 0
+        completedTasks: 0,
       };
     }
   }

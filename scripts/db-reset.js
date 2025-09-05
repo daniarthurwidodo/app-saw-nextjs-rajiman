@@ -13,7 +13,8 @@ let connection = null;
 function gracefulShutdown(signal) {
   console.log(`\n🛑 Received ${signal}, shutting down gracefully...`);
   if (connection) {
-    connection.end()
+    connection
+      .end()
       .then(() => {
         console.log('✅ Database connection closed');
         process.exit(0);
@@ -37,7 +38,7 @@ async function resetDatabase() {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    port: parseInt(process.env.DB_PORT) || 3306
+    port: parseInt(process.env.DB_PORT) || 3306,
   };
 
   console.log('🔧 Resetting database...');
@@ -53,7 +54,7 @@ async function resetDatabase() {
 
     // Get all tables
     const [tables] = await connection.query('SHOW TABLES');
-    
+
     if (tables.length === 0) {
       console.log('📭 Database is already empty');
     } else {
@@ -75,15 +76,14 @@ async function resetDatabase() {
     console.log('  npm run db:init     - Create tables');
     console.log('  npm run db:migrate  - Add admin user and sample data');
     console.log('  npm run db:seed     - Add test users');
-
   } catch (error) {
     console.error('❌ Reset failed:');
     console.error(`   - ${error.message}`);
-    
+
     if (error.code === 'ER_BAD_DB_ERROR') {
       console.error('💡 Database does not exist, run: npm run db:create');
     }
-    
+
     process.exit(1);
   }
 }

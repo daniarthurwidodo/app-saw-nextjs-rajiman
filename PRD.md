@@ -1,8 +1,11 @@
 # Claude Code - School Management System
+
 ## Product Requirements Document (PRD)
 
 ### Version: 1.0
+
 ### Date: September 5, 2025
+
 ### Document Owner: Product Team
 
 ---
@@ -12,9 +15,11 @@
 **Claude Code** is a comprehensive school management and decision support system designed to streamline administrative processes, facilitate strategic decision-making, and enhance task management across different organizational levels within educational institutions.
 
 ### 1.1 Product Vision
+
 To create an integrated platform that empowers educational administrators and staff to make data-driven decisions while efficiently managing daily operations and strategic initiatives.
 
 ### 1.2 Key Objectives
+
 - Centralize school management operations
 - Enable strategic decision-making with data insights
 - Streamline task management and approval workflows
@@ -26,12 +31,15 @@ To create an integrated platform that empowers educational administrators and st
 ## 2. User Roles & Permissions
 
 ### 2.1 Super Admin
+
 **Primary Responsibilities:**
+
 - System-wide configuration and management
 - School and principal data management
 - Criteria weighting configuration for decision support
 
 **Key Capabilities:**
+
 - Input and manage school information
 - Assign and manage school principals (kepala sekolah)
 - Configure decision criteria weights and parameters
@@ -39,12 +47,15 @@ To create an integrated platform that empowers educational administrators and st
 - User role assignment and permissions management
 
 ### 2.2 Admin
+
 **Primary Responsibilities:**
+
 - Data management and system operations
 - Content approval and oversight
 - Daily system administration
 
 **Key Capabilities:**
+
 - Data input and file upload functionality
 - Approval workflows for various processes
 - System configuration and maintenance
@@ -52,12 +63,15 @@ To create an integrated platform that empowers educational administrators and st
 - Report generation and data export
 
 ### 2.3 Kepala Sekolah (Principal)
+
 **Primary Responsibilities:**
+
 - Strategic decision-making for the school
 - Task oversight and approval
 - Performance monitoring and reporting
 
 **Key Capabilities:**
+
 - Strategic decision selection and implementation
 - Task creation and recommendation system
 - Comprehensive dashboard access with KPIs
@@ -66,12 +80,15 @@ To create an integrated platform that empowers educational administrators and st
 - Monitor school performance metrics
 
 ### 2.4 User (Staff/Job Role)
+
 **Primary Responsibilities:**
+
 - Task execution and management
 - Progress reporting and documentation
 - Daily operational activities
 
 **Key Capabilities:**
+
 - Task management system (Todo → In Progress → Done)
 - Subtask creation and assignment to team members
 - Progress tracking and status updates
@@ -84,24 +101,28 @@ To create an integrated platform that empowers educational administrators and st
 ## 3. Core Features & Functionality
 
 ### 3.1 User Management System
+
 - **Authentication & Authorization:** Secure login with role-based access
 - **Profile Management:** User information, contact details, role assignments
 - **Permission Matrix:** Granular permissions based on user roles
 - **Session Management:** Secure session handling with timeout
 
 ### 3.2 School Management
+
 - **School Registration:** Complete school information management
 - **Principal Assignment:** Link principals to specific schools
 - **Organizational Structure:** Define reporting hierarchies
 - **Multi-school Support:** Handle multiple educational institutions
 
 ### 3.3 Decision Support System
+
 - **Criteria Management:** Configure weighted decision criteria
 - **Strategic Options:** Present strategic choices to principals
 - **Decision Analytics:** Track decision outcomes and effectiveness
 - **Recommendation Engine:** Generate data-driven recommendations
 
 ### 3.4 Task Management System
+
 - **Task Creation:** Create tasks with detailed specifications
 - **Workflow Management:** Todo → In Progress → Done lifecycle
 - **Approval Process:** Principal approval for critical milestones
@@ -110,6 +131,7 @@ To create an integrated platform that empowers educational administrators and st
 - **Progress Tracking:** Real-time progress monitoring
 
 ### 3.5 Documentation System
+
 - **File Upload:** Multiple file format support
 - **Image Management:** Documentation photos, attendance records
 - **Payment Documentation:** Financial transaction records
@@ -117,6 +139,7 @@ To create an integrated platform that empowers educational administrators and st
 - **Access Control:** Role-based document access
 
 ### 3.6 Reporting & Analytics
+
 - **Dashboard:** Role-specific KPI dashboards
 - **Performance Reports:** Comprehensive performance analytics
 - **Progress Reports:** Task and project progress tracking
@@ -130,6 +153,7 @@ To create an integrated platform that empowers educational administrators and st
 ### 4.1 Core Tables
 
 #### Users Table
+
 ```sql
 - user_id (Primary Key)
 - name
@@ -143,6 +167,7 @@ To create an integrated platform that empowers educational administrators and st
 ```
 
 #### Schools Table
+
 ```sql
 - sekolah_id (Primary Key)
 - nama_sekolah
@@ -154,6 +179,7 @@ To create an integrated platform that empowers educational administrators and st
 ```
 
 #### Tasks Table
+
 ```sql
 - task_id (Primary Key)
 - title
@@ -171,6 +197,7 @@ To create an integrated platform that empowers educational administrators and st
 ```
 
 #### Subtasks Table
+
 ```sql
 - subtask_id (Primary Key)
 - relation_task_id (Foreign Key to Tasks)
@@ -185,6 +212,7 @@ To create an integrated platform that empowers educational administrators and st
 ```
 
 #### Documentation Table
+
 ```sql
 - doc_id (Primary Key)
 - subtask_id (Foreign Key)
@@ -196,6 +224,7 @@ To create an integrated platform that empowers educational administrators and st
 ```
 
 #### Reports Table
+
 ```sql
 - report_id (Primary Key)
 - task_id (Foreign Key)
@@ -208,6 +237,7 @@ To create an integrated platform that empowers educational administrators and st
 ```
 
 #### Criteria Table
+
 ```sql
 - criteria_id (Primary Key)
 - criteria_name
@@ -224,6 +254,7 @@ To create an integrated platform that empowers educational administrators and st
 ### 5.1 Technology Stack
 
 #### Backend
+
 - **Framework:** Next.js 15 with App Router
 - **Database:** MySQL (primary)
 - **Authentication:** NextAuth.js with JWT
@@ -231,6 +262,7 @@ To create an integrated platform that empowers educational administrators and st
 - **API:** Next.js API Routes (RESTful design)
 
 #### Frontend
+
 - **Framework:** Next.js 15 with React 19
 - **State Management:** React Context API with Server Components
 - **UI Components:** shadcn/ui with Tailwind CSS
@@ -238,6 +270,7 @@ To create an integrated platform that empowers educational administrators and st
 - **Charts/Analytics:** Recharts or Chart.js
 
 #### DevOps & Infrastructure
+
 - **Development:** Turbopack for fast development
 - **Version Control:** Git
 - **Database Connection:** mysql2 with connection pooling
@@ -245,6 +278,7 @@ To create an integrated platform that empowers educational administrators and st
 - **API Documentation:** Built-in Next.js API documentation
 
 ### 5.2 System Requirements
+
 - **Responsive Design:** Compatible with desktop, tablet, and mobile devices
 - **Browser Support:** Chrome, Firefox, Safari, Edge (latest versions)
 - **Performance:** Page load time < 2 seconds with Turbopack
@@ -256,6 +290,7 @@ To create an integrated platform that empowers educational administrators and st
 ## 6. User Experience (UX) Requirements
 
 ### 6.1 Design Principles
+
 - **Intuitive Navigation:** Clear menu structure and breadcrumbs
 - **Consistent Interface:** Uniform design patterns using shadcn/ui
 - **Accessibility:** WCAG 2.1 AA compliance
@@ -265,18 +300,21 @@ To create an integrated platform that empowers educational administrators and st
 ### 6.2 Key User Journeys
 
 #### Super Admin Journey
+
 1. Login → System Dashboard
 2. School Management → Add/Edit Schools
 3. User Management → Assign Roles
 4. Criteria Configuration → Set Weights
 
 #### Principal Journey
+
 1. Login → Principal Dashboard
 2. Strategic Decisions → Review Options
 3. Task Approval → Review Submissions
 4. Reports → Generate Analytics
 
 #### Staff/User Journey
+
 1. Login → Personal Dashboard
 2. Task Management → Update Progress
 3. Documentation → Upload Files
@@ -287,12 +325,14 @@ To create an integrated platform that empowers educational administrators and st
 ## 7. Security Requirements
 
 ### 7.1 Authentication & Authorization
+
 - NextAuth.js for secure authentication
 - Role-based access control (RBAC)
 - Session timeout and management
 - Password complexity requirements
 
 ### 7.2 Data Security
+
 - Data encryption at rest and in transit
 - Regular security audits
 - SQL injection and XSS protection
@@ -304,6 +344,7 @@ To create an integrated platform that empowers educational administrators and st
 ## 8. Performance Requirements
 
 ### 8.1 System Performance
+
 - **Response Time:** < 1 second for most operations with Turbopack
 - **Concurrent Users:** Support for 1000+ simultaneous users
 - **Database Performance:** Optimized queries with mysql2
@@ -311,6 +352,7 @@ To create an integrated platform that empowers educational administrators and st
 - **Static Generation:** ISR for better performance
 
 ### 8.2 Scalability
+
 - Next.js optimized for scalability
 - Database connection pooling
 - Image optimization with Next.js Image component
@@ -321,12 +363,14 @@ To create an integrated platform that empowers educational administrators and st
 ## 9. Integration Requirements
 
 ### 9.1 External Integrations
+
 - Email notification system (Nodemailer)
 - File storage services integration ready
 - Analytics platforms (Vercel Analytics)
 - Database backup services
 
 ### 9.2 API Requirements
+
 - **Next.js API Routes:** RESTful endpoints using /api directory structure
 - **API rate limiting:** Built-in middleware for request limiting
 - **Real-time updates:** Server-Sent Events integration
@@ -338,6 +382,7 @@ To create an integrated platform that empowers educational administrators and st
 ## 10. Testing Requirements
 
 ### 10.1 Testing Strategy
+
 - **Unit Testing:** Jest and React Testing Library
 - **Integration Testing:** API and database testing
 - **User Acceptance Testing:** Role-based testing scenarios
@@ -349,12 +394,14 @@ To create an integrated platform that empowers educational administrators and st
 ## 11. Deployment & Maintenance
 
 ### 11.1 Deployment Strategy
+
 - **Vercel:** Recommended for Next.js applications
 - **Environment Setup:** Development, Staging, Production
 - **Database:** MySQL on cloud (PlanetScale, AWS RDS)
 - **CI/CD:** Built-in Vercel deployment pipeline
 
 ### 11.2 Maintenance Plan
+
 - Regular security updates
 - Performance monitoring with Vercel Analytics
 - User feedback collection
@@ -366,6 +413,7 @@ To create an integrated platform that empowers educational administrators and st
 ## 12. Success Metrics
 
 ### 12.1 Key Performance Indicators (KPIs)
+
 - **User Adoption:** 90% active user rate within 3 months
 - **System Uptime:** 99.9% availability
 - **Task Completion Rate:** 85% tasks completed on time
@@ -377,21 +425,25 @@ To create an integrated platform that empowers educational administrators and st
 ## 13. Timeline & Milestones
 
 ### Phase 1 (Months 1-2): Core System Development
+
 - User authentication with NextAuth.js
 - Basic CRUD operations with API routes
 - Database setup with MySQL and core tables
 
 ### Phase 2 (Months 3-4): Feature Development
+
 - Task management system
 - Documentation upload functionality
 - Basic reporting with charts
 
 ### Phase 3 (Months 5-6): Advanced Features
+
 - Decision support system
 - Advanced analytics dashboards
 - Mobile responsiveness optimization
 
 ### Phase 4 (Months 7-8): Testing & Deployment
+
 - Comprehensive testing
 - Security audits
 - Production deployment
@@ -401,11 +453,13 @@ To create an integrated platform that empowers educational administrators and st
 ## 14. Risk Assessment
 
 ### 14.1 Technical Risks
+
 - **Database Performance:** MySQL optimization and indexing
 - **Security Vulnerabilities:** NextAuth.js and Next.js security features
 - **Scalability Issues:** Next.js built-in performance optimizations
 
 ### 14.2 Business Risks
+
 - **User Adoption:** Comprehensive training program
 - **Data Migration:** Thorough testing with MySQL
 - **Integration Challenges:** Well-documented API routes

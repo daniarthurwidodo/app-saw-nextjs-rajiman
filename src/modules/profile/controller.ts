@@ -4,7 +4,10 @@ import { ProfileValidator } from './validation';
 import { ProfileError } from './types';
 
 export class ProfileController {
-  static async getProfile(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+  static async getProfile(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+  ): Promise<NextResponse> {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const result = await ProfileService.getProfile(userId);
@@ -12,7 +15,7 @@ export class ProfileController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Get profile controller error:', error);
-      
+
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -27,7 +30,10 @@ export class ProfileController {
     }
   }
 
-  static async updateProfile(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+  static async updateProfile(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+  ): Promise<NextResponse> {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const body = await request.json();
@@ -37,7 +43,7 @@ export class ProfileController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Update profile controller error:', error);
-      
+
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -52,7 +58,10 @@ export class ProfileController {
     }
   }
 
-  static async changePassword(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+  static async changePassword(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+  ): Promise<NextResponse> {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const body = await request.json();
@@ -62,7 +71,7 @@ export class ProfileController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Change password controller error:', error);
-      
+
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -77,7 +86,10 @@ export class ProfileController {
     }
   }
 
-  static async uploadProfileImage(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+  static async uploadProfileImage(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+  ): Promise<NextResponse> {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const body = await request.json();
@@ -94,7 +106,7 @@ export class ProfileController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Upload profile image controller error:', error);
-      
+
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -114,13 +126,13 @@ export class ProfileController {
     try {
       // For now, using hardcoded user ID (in a real app, this would come from JWT/session)
       const userId = 1;
-      
+
       const result = await ProfileService.getProfile(userId);
 
       return NextResponse.json(result);
     } catch (error) {
       console.error('Get current profile controller error:', error);
-      
+
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -146,7 +158,7 @@ export class ProfileController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Update current profile controller error:', error);
-      
+
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },

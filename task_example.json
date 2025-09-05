@@ -1,0 +1,79 @@
+{
+  "success": true,
+  "message": "Tasks retrieved successfully",
+  "tasks": [
+    {
+      "task_id": 1,
+      "title": "Setup New School Registration System",
+      "description": "Implement and configure the new school registration system for incoming students",
+      "assigned_to": 9,
+      "assigned_user_name": "Andi Wijaya",
+      "created_by": 8,
+      "created_by_name": "Drs. Habibie Rahman",
+      "status": "done",
+      "priority": "high",
+      "due_date": null,
+      "approval_status": "pending",
+      "approved_by_user_id": null,
+      "approved_by_name": null,
+      "approval_date": null,
+      "created_at": "2025-09-05T06:46:14.000Z",
+      "updated_at": "2025-09-05T00:10:59.000Z",
+      "subtasks": [
+        {
+          "subtask_id": 1,
+          "title": "Research available systems",
+          "status": "done",
+          "created_at": "2025-09-05T06:46:14.000Z",
+          "updated_at": "2025-09-05T00:10:59.000Z",
+          "images": [
+            {
+              "image_id": 1,
+              "url": "https://example.com/images/research1.png",
+              "uploaded_at": "2025-09-05T06:50:00.000Z"
+            },
+            {
+              "image_id": 2,
+              "url": "https://example.com/images/research2.png",
+              "uploaded_at": "2025-09-05T06:55:00.000Z"
+            }
+          ]
+        },
+        {
+          "subtask_id": 2,
+          "title": "Select the best system",
+          "status": "done",
+          "created_at": "2025-09-05T06:46:14.000Z",
+          "updated_at": "2025-09-05T00:10:59.000Z"
+        },
+        {
+          "subtask_id": 3,
+          "title": "Configure the system",
+          "status": "done",
+          "created_at": "2025-09-05T06:46:14.000Z",
+          "updated_at": "2025-09-05T00:10:59.000Z"
+        },
+        {
+          "subtask_id": 4,
+          "title": "Test the system",
+          "status": "done",
+          "created_at": "2025-09-05T06:46:14.000Z",
+          "updated_at": "2025-09-05T00:10:59.000Z"
+        },
+        {
+          "subtask_id": 5,
+          "title": "Train staff on using the system",
+          "status": "done",
+          "created_at": "2025-09-05T06:46:14.000Z",
+          "updated_at": "2025-09-05T00:10:59.000Z"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 7,
+    "totalPages": 1
+  }
+}

@@ -18,7 +18,7 @@ export async function query(sql: string, params?: any[]) {
       console.log('SQL:', sql.replace(/\s+/g, ' ').trim());
       console.log('Params:', params);
     }
-    
+
     // For now, let's use regular query() for all SELECT statements to avoid prepared statement issues
     if (sql.trim().toUpperCase().startsWith('SELECT')) {
       // Build the SQL string manually for SELECT statements
@@ -45,52 +45,52 @@ export async function query(sql: string, params?: any[]) {
           return '?';
         });
       }
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log('Final SQL:', finalSql.replace(/\s+/g, ' ').trim());
       }
-      
+
       const [results] = await pool.query(finalSql);
       return results;
     } else {
       // For INSERT, UPDATE, DELETE - use prepared statements
-      const cleanParams = params ? params.map(param => param === undefined ? null : param) : [];
+      const cleanParams = params ? params.map((param) => (param === undefined ? null : param)) : [];
       const [results] = await pool.execute(sql, cleanParams);
       return results;
     }
   } catch (error: any) {
     console.error('Database query error:', error);
-    
+
     // Provide helpful error message for common database issues
     if (error.code === 'ER_BAD_DB_ERROR') {
       const dbName = process.env.DB_NAME || 'claude_code_db';
       throw new Error(
         `Database '${dbName}' does not exist. Please create it first:\n` +
-        `1. Run: POST /api/create-db\n` +
-        `2. Or manually: CREATE DATABASE ${dbName};\n` +
-        `3. Then run: POST /api/init-db`
+          `1. Run: POST /api/create-db\n` +
+          `2. Or manually: CREATE DATABASE ${dbName};\n` +
+          `3. Then run: POST /api/init-db`
       );
     }
-    
+
     if (error.code === 'ECONNREFUSED') {
       throw new Error(
         `Cannot connect to MySQL server. Please check:\n` +
-        `1. MySQL server is running\n` +
-        `2. Host: ${process.env.DB_HOST || 'localhost'}\n` +
-        `3. Port: ${process.env.DB_PORT || 3306}\n` +
-        `4. Credentials in .env.local`
+          `1. MySQL server is running\n` +
+          `2. Host: ${process.env.DB_HOST || 'localhost'}\n` +
+          `3. Port: ${process.env.DB_PORT || 3306}\n` +
+          `4. Credentials in .env.local`
       );
     }
-    
+
     if (error.code === 'ER_ACCESS_DENIED_ERROR') {
       throw new Error(
         `Access denied. Please check:\n` +
-        `1. Username: ${process.env.DB_USER || 'root'}\n` +
-        `2. Password in .env.local\n` +
-        `3. User has proper privileges`
+          `1. Username: ${process.env.DB_USER || 'root'}\n` +
+          `2. Password in .env.local\n` +
+          `3. User has proper privileges`
       );
     }
-    
+
     throw error;
   }
 }
@@ -100,10 +100,10 @@ let isShuttingDown = false;
 
 export async function closePool() {
   if (isShuttingDown) return;
-  
+
   isShuttingDown = true;
   console.log('🔄 Closing database connection pool...');
-  
+
   try {
     await pool.end();
     console.log('✅ Database connection pool closed successfully');

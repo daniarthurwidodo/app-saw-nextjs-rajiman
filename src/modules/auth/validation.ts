@@ -2,7 +2,7 @@ import { UserRole } from '@/types';
 import { LoginRequest, RegisterRequest, ValidationError } from './types';
 
 export class AuthValidator {
-  static validateEmail(email: string): ValidationError | null {
+  static validateEmail(email: string): { field: string; message: string } | null {
     if (!email) {
       return { field: 'email', message: 'Email is required' };
     }
@@ -19,7 +19,7 @@ export class AuthValidator {
     return null;
   }
 
-  static validatePassword(password: string): ValidationError | null {
+  static validatePassword(password: string): { field: string; message: string } | null {
     if (!password) {
       return { field: 'password', message: 'Password is required' };
     }
@@ -35,7 +35,7 @@ export class AuthValidator {
     return null;
   }
 
-  static validateName(name: string): ValidationError | null {
+  static validateName(name: string): { field: string; message: string } | null {
     if (!name) {
       return { field: 'name', message: 'Name is required' };
     }
@@ -51,24 +51,24 @@ export class AuthValidator {
     return null;
   }
 
-  static validateRole(role: string): ValidationError | null {
+  static validateRole(role: string): { field: string; message: string } | null {
     if (!role) {
       return { field: 'role', message: 'Role is required' };
     }
 
     const validRoles = Object.values(UserRole);
     if (!validRoles.includes(role as UserRole)) {
-      return { 
-        field: 'role', 
-        message: `Invalid role. Must be one of: ${validRoles.join(', ')}` 
+      return {
+        field: 'role',
+        message: `Invalid role. Must be one of: ${validRoles.join(', ')}`,
       };
     }
 
     return null;
   }
 
-  static validateLogin(data: LoginRequest): ValidationError[] {
-    const errors: ValidationError[] = [];
+  static validateLogin(data: LoginRequest): { field: string; message: string }[] {
+    const errors: { field: string; message: string }[] = [];
 
     const emailError = this.validateEmail(data.email);
     if (emailError) errors.push(emailError);
@@ -79,8 +79,8 @@ export class AuthValidator {
     return errors;
   }
 
-  static validateRegister(data: RegisterRequest): ValidationError[] {
-    const errors: ValidationError[] = [];
+  static validateRegister(data: RegisterRequest): { field: string; message: string }[] {
+    const errors: { field: string; message: string }[] = [];
 
     const nameError = this.validateName(data.name);
     if (nameError) errors.push(nameError);
@@ -96,9 +96,9 @@ export class AuthValidator {
 
     if (data.school_id !== undefined) {
       if (!Number.isInteger(data.school_id) || data.school_id <= 0) {
-        errors.push({ 
-          field: 'school_id', 
-          message: 'School ID must be a positive integer' 
+        errors.push({
+          field: 'school_id',
+          message: 'School ID must be a positive integer',
         });
       }
     }
@@ -113,7 +113,7 @@ export class AuthValidator {
   static sanitizeLoginInput(data: LoginRequest): LoginRequest {
     return {
       email: this.sanitizeInput(data.email.toLowerCase()),
-      password: data.password // Don't sanitize password to preserve original
+      password: data.password, // Don't sanitize password to preserve original
     };
   }
 
@@ -123,7 +123,7 @@ export class AuthValidator {
       email: this.sanitizeInput(data.email.toLowerCase()),
       password: data.password, // Don't sanitize password
       role: data.role,
-      school_id: data.school_id
+      school_id: data.school_id,
     };
   }
 }

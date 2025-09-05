@@ -21,20 +21,19 @@ export class UsersController {
         role: searchParams.get('role'),
         school_id: searchParams.get('school_id'),
         is_active: searchParams.get('is_active'),
-        search: searchParams.get('search')
+        search: searchParams.get('search'),
       });
 
       const result = await UsersService.getUsers(filters, { page, limit });
 
       return NextResponse.json(result, { status: 200 });
-
     } catch (error) {
       if (error instanceof UsersError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -45,7 +44,7 @@ export class UsersController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -58,14 +57,13 @@ export class UsersController {
       const result = await UsersService.getUserById(validatedUserId);
 
       return NextResponse.json(result, { status: 200 });
-
     } catch (error) {
       if (error instanceof UsersError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -76,7 +74,7 @@ export class UsersController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -91,20 +89,19 @@ export class UsersController {
         email: body.email,
         password: body.password,
         role: body.role,
-        school_id: body.school_id
+        school_id: body.school_id,
       };
 
       const result = await UsersService.createUser(userData);
 
       return NextResponse.json(result, { status: 201 });
-
     } catch (error) {
       if (error instanceof UsersError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -115,7 +112,7 @@ export class UsersController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -126,17 +123,17 @@ export class UsersController {
     try {
       const validatedUserId = UsersValidator.validateUserId(userId);
       const body = await request.json();
-      
+
       const updateData: UpdateUserRequest = {
         name: body.name,
         email: body.email,
         role: body.role,
         school_id: body.school_id,
-        is_active: body.is_active
+        is_active: body.is_active,
       };
 
       // Remove undefined values
-      Object.keys(updateData).forEach(key => {
+      Object.keys(updateData).forEach((key) => {
         if (updateData[key as keyof UpdateUserRequest] === undefined) {
           delete updateData[key as keyof UpdateUserRequest];
         }
@@ -145,14 +142,13 @@ export class UsersController {
       const result = await UsersService.updateUser(validatedUserId, updateData);
 
       return NextResponse.json(result, { status: 200 });
-
     } catch (error) {
       if (error instanceof UsersError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -163,7 +159,7 @@ export class UsersController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -176,14 +172,13 @@ export class UsersController {
       const result = await UsersService.deleteUser(validatedUserId);
 
       return NextResponse.json(result, { status: 200 });
-
     } catch (error) {
       if (error instanceof UsersError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -194,7 +189,7 @@ export class UsersController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -211,7 +206,7 @@ export class UsersController {
           {
             success: false,
             message: 'Role parameter is required',
-            code: 'MISSING_ROLE'
+            code: 'MISSING_ROLE',
           },
           { status: 400 }
         );
@@ -223,7 +218,7 @@ export class UsersController {
           {
             success: false,
             message: `Invalid role. Must be one of: ${validRoles.join(', ')}`,
-            code: 'INVALID_ROLE'
+            code: 'INVALID_ROLE',
           },
           { status: 400 }
         );
@@ -231,19 +226,21 @@ export class UsersController {
 
       const users = await UsersService.getUsersByRole(role);
 
-      return NextResponse.json({
-        success: true,
-        message: 'Users retrieved successfully',
-        users
-      }, { status: 200 });
-
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Users retrieved successfully',
+          users,
+        },
+        { status: 200 }
+      );
     } catch (error) {
       if (error instanceof UsersError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -254,7 +251,7 @@ export class UsersController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -271,7 +268,7 @@ export class UsersController {
           {
             success: false,
             message: 'School ID parameter is required',
-            code: 'MISSING_SCHOOL_ID'
+            code: 'MISSING_SCHOOL_ID',
           },
           { status: 400 }
         );
@@ -283,7 +280,7 @@ export class UsersController {
           {
             success: false,
             message: 'Invalid school ID',
-            code: 'INVALID_SCHOOL_ID'
+            code: 'INVALID_SCHOOL_ID',
           },
           { status: 400 }
         );
@@ -291,19 +288,21 @@ export class UsersController {
 
       const users = await UsersService.getUsersBySchool(schoolId);
 
-      return NextResponse.json({
-        success: true,
-        message: 'Users retrieved successfully',
-        users
-      }, { status: 200 });
-
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Users retrieved successfully',
+          users,
+        },
+        { status: 200 }
+      );
     } catch (error) {
       if (error instanceof UsersError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -314,7 +313,7 @@ export class UsersController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );

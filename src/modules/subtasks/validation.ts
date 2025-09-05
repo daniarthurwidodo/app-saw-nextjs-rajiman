@@ -10,10 +10,14 @@ export class SubtasksValidator {
     const errors: ValidationError[] = [];
 
     // Validate relation_task_id
-    if (!data.relation_task_id || typeof data.relation_task_id !== 'number' || data.relation_task_id <= 0) {
+    if (
+      !data.relation_task_id ||
+      typeof data.relation_task_id !== 'number' ||
+      data.relation_task_id <= 0
+    ) {
       errors.push({
         field: 'relation_task_id',
-        message: 'Valid task ID is required'
+        message: 'Valid task ID is required',
       });
     }
 
@@ -21,19 +25,19 @@ export class SubtasksValidator {
     if (!data.subtask_title || typeof data.subtask_title !== 'string') {
       errors.push({
         field: 'subtask_title',
-        message: 'Subtask title is required'
+        message: 'Subtask title is required',
       });
     } else {
       const trimmedTitle = data.subtask_title.trim();
       if (trimmedTitle.length === 0) {
         errors.push({
           field: 'subtask_title',
-          message: 'Subtask title cannot be empty'
+          message: 'Subtask title cannot be empty',
         });
       } else if (trimmedTitle.length > 255) {
         errors.push({
           field: 'subtask_title',
-          message: 'Subtask title must be 255 characters or less'
+          message: 'Subtask title must be 255 characters or less',
         });
       }
     }
@@ -43,12 +47,12 @@ export class SubtasksValidator {
       if (typeof data.subtask_description !== 'string') {
         errors.push({
           field: 'subtask_description',
-          message: 'Subtask description must be a string'
+          message: 'Subtask description must be a string',
         });
       } else if (data.subtask_description.length > 5000) {
         errors.push({
           field: 'subtask_description',
-          message: 'Subtask description must be 5000 characters or less'
+          message: 'Subtask description must be 5000 characters or less',
         });
       }
     }
@@ -58,7 +62,7 @@ export class SubtasksValidator {
       if (typeof data.assigned_to !== 'number' || data.assigned_to <= 0) {
         errors.push({
           field: 'assigned_to',
-          message: 'Assigned user ID must be a positive number'
+          message: 'Assigned user ID must be a positive number',
         });
       }
     }
@@ -68,12 +72,12 @@ export class SubtasksValidator {
       if (typeof data.subtask_date !== 'string') {
         errors.push({
           field: 'subtask_date',
-          message: 'Subtask date must be a string'
+          message: 'Subtask date must be a string',
         });
       } else if (data.subtask_date && !this.isValidDate(data.subtask_date)) {
         errors.push({
           field: 'subtask_date',
-          message: 'Subtask date must be in YYYY-MM-DD format'
+          message: 'Subtask date must be in YYYY-MM-DD format',
         });
       }
     }
@@ -85,14 +89,14 @@ export class SubtasksValidator {
     const errors: ValidationError[] = [];
 
     // Check if at least one field is provided
-    const hasValidFields = Object.keys(data).some(key => 
-      data[key as keyof UpdateSubtaskRequest] !== undefined
+    const hasValidFields = Object.keys(data).some(
+      (key) => data[key as keyof UpdateSubtaskRequest] !== undefined
     );
 
     if (!hasValidFields) {
       errors.push({
         field: 'general',
-        message: 'At least one field must be provided for update'
+        message: 'At least one field must be provided for update',
       });
       return errors;
     }
@@ -102,19 +106,19 @@ export class SubtasksValidator {
       if (typeof data.subtask_title !== 'string') {
         errors.push({
           field: 'subtask_title',
-          message: 'Subtask title must be a string'
+          message: 'Subtask title must be a string',
         });
       } else {
         const trimmedTitle = data.subtask_title.trim();
         if (trimmedTitle.length === 0) {
           errors.push({
             field: 'subtask_title',
-            message: 'Subtask title cannot be empty'
+            message: 'Subtask title cannot be empty',
           });
         } else if (trimmedTitle.length > 255) {
           errors.push({
             field: 'subtask_title',
-            message: 'Subtask title must be 255 characters or less'
+            message: 'Subtask title must be 255 characters or less',
           });
         }
       }
@@ -125,22 +129,25 @@ export class SubtasksValidator {
       if (typeof data.subtask_description !== 'string') {
         errors.push({
           field: 'subtask_description',
-          message: 'Subtask description must be a string'
+          message: 'Subtask description must be a string',
         });
       } else if (data.subtask_description.length > 5000) {
         errors.push({
           field: 'subtask_description',
-          message: 'Subtask description must be 5000 characters or less'
+          message: 'Subtask description must be 5000 characters or less',
         });
       }
     }
 
     // Validate assigned_to (optional)
     if (data.assigned_to !== undefined) {
-      if (data.assigned_to !== null && (typeof data.assigned_to !== 'number' || data.assigned_to <= 0)) {
+      if (
+        data.assigned_to !== null &&
+        (typeof data.assigned_to !== 'number' || data.assigned_to <= 0)
+      ) {
         errors.push({
           field: 'assigned_to',
-          message: 'Assigned user ID must be a positive number or null'
+          message: 'Assigned user ID must be a positive number or null',
         });
       }
     }
@@ -150,7 +157,7 @@ export class SubtasksValidator {
       if (!Object.values(SubtaskStatus).includes(data.subtask_status)) {
         errors.push({
           field: 'subtask_status',
-          message: `Subtask status must be one of: ${Object.values(SubtaskStatus).join(', ')}`
+          message: `Subtask status must be one of: ${Object.values(SubtaskStatus).join(', ')}`,
         });
       }
     }
@@ -160,12 +167,12 @@ export class SubtasksValidator {
       if (typeof data.subtask_comment !== 'string') {
         errors.push({
           field: 'subtask_comment',
-          message: 'Subtask comment must be a string'
+          message: 'Subtask comment must be a string',
         });
       } else if (data.subtask_comment.length > 2000) {
         errors.push({
           field: 'subtask_comment',
-          message: 'Subtask comment must be 2000 characters or less'
+          message: 'Subtask comment must be 2000 characters or less',
         });
       }
     }
@@ -176,12 +183,12 @@ export class SubtasksValidator {
         if (typeof data.subtask_date !== 'string') {
           errors.push({
             field: 'subtask_date',
-            message: 'Subtask date must be a string or null'
+            message: 'Subtask date must be a string or null',
           });
         } else if (!this.isValidDate(data.subtask_date)) {
           errors.push({
             field: 'subtask_date',
-            message: 'Subtask date must be in YYYY-MM-DD format'
+            message: 'Subtask date must be in YYYY-MM-DD format',
           });
         }
       }
@@ -193,12 +200,17 @@ export class SubtasksValidator {
   static sanitizeCreateSubtask(data: CreateSubtaskRequest): CreateSubtaskRequest {
     return {
       relation_task_id: data.relation_task_id,
-      subtask_title: typeof data.subtask_title === 'string' ? data.subtask_title.trim() : data.subtask_title,
-      subtask_description: typeof data.subtask_description === 'string' ? 
-        data.subtask_description.trim() || null : data.subtask_description,
+      subtask_title:
+        typeof data.subtask_title === 'string' ? data.subtask_title.trim() : data.subtask_title,
+      subtask_description:
+        typeof data.subtask_description === 'string'
+          ? data.subtask_description.trim() || null
+          : data.subtask_description,
       assigned_to: data.assigned_to || null,
-      subtask_date: typeof data.subtask_date === 'string' ? 
-        data.subtask_date.trim() || null : data.subtask_date
+      subtask_date:
+        typeof data.subtask_date === 'string'
+          ? data.subtask_date.trim() || null
+          : data.subtask_date,
     };
   }
 
@@ -206,12 +218,15 @@ export class SubtasksValidator {
     const sanitized: UpdateSubtaskRequest = {};
 
     if (data.subtask_title !== undefined) {
-      sanitized.subtask_title = typeof data.subtask_title === 'string' ? data.subtask_title.trim() : data.subtask_title;
+      sanitized.subtask_title =
+        typeof data.subtask_title === 'string' ? data.subtask_title.trim() : data.subtask_title;
     }
 
     if (data.subtask_description !== undefined) {
-      sanitized.subtask_description = typeof data.subtask_description === 'string' ? 
-        data.subtask_description.trim() || null : data.subtask_description;
+      sanitized.subtask_description =
+        typeof data.subtask_description === 'string'
+          ? data.subtask_description.trim() || null
+          : data.subtask_description;
     }
 
     if (data.assigned_to !== undefined) {
@@ -223,13 +238,17 @@ export class SubtasksValidator {
     }
 
     if (data.subtask_comment !== undefined) {
-      sanitized.subtask_comment = typeof data.subtask_comment === 'string' ? 
-        data.subtask_comment.trim() || null : data.subtask_comment;
+      sanitized.subtask_comment =
+        typeof data.subtask_comment === 'string'
+          ? data.subtask_comment.trim() || null
+          : data.subtask_comment;
     }
 
     if (data.subtask_date !== undefined) {
-      sanitized.subtask_date = typeof data.subtask_date === 'string' ? 
-        data.subtask_date.trim() || null : data.subtask_date;
+      sanitized.subtask_date =
+        typeof data.subtask_date === 'string'
+          ? data.subtask_date.trim() || null
+          : data.subtask_date;
     }
 
     return sanitized;
@@ -245,7 +264,7 @@ export class SubtasksValidator {
     // Check if it's a valid date
     const date = new Date(dateString);
     const timestamp = date.getTime();
-    
+
     if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
       return false;
     }

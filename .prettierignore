@@ -1,0 +1,13 @@
+node_modules
+.next
+out
+build
+dist
+coverage
+*.log
+.env*
+next-env.d.ts
+public
+.turbo
+.vercel
+.vscode

@@ -8,7 +8,7 @@ export async function GET() {
       '/api/init-db': {
         method: 'POST',
         description: 'Initialize database tables (run first)',
-        purpose: 'Creates all required database tables with proper schema'
+        purpose: 'Creates all required database tables with proper schema',
       },
       '/api/migrate': {
         method: 'POST',
@@ -17,8 +17,8 @@ export async function GET() {
         credentials: {
           email: 'admin@claudecode.com',
           password: 'password123',
-          role: 'super_admin'
-        }
+          role: 'super_admin',
+        },
       },
       '/api/seed-users': {
         method: 'POST',
@@ -26,13 +26,13 @@ export async function GET() {
         purpose: 'Populates system with test users for development/demo',
         includes: [
           '1 Super Admin',
-          '2 Admin users', 
+          '2 Admin users',
           '4 Principal users',
           '8 Staff users',
-          'Sample tasks and assignments'
+          'Sample tasks and assignments',
         ],
-        note: 'All users have password: password123'
-      }
+        note: 'All users have password: password123',
+      },
     },
     rollbackOptions: {
       '/api/rollback': {
@@ -41,26 +41,27 @@ export async function GET() {
         targets: {
           users: 'Remove dummy users (keeps original admin)',
           'sample-data': 'Remove sample schools, tasks, and criteria',
-          all: 'Remove all dummy data and sample content'
+          all: 'Remove all dummy data and sample content',
         },
         usage: {
           body: '{"target": "users|sample-data|all"}',
-          example: 'curl -X POST /api/rollback -H "Content-Type: application/json" -d \'{"target":"all"}\''
-        }
-      }
+          example:
+            'curl -X POST /api/rollback -H "Content-Type: application/json" -d \'{"target":"all"}\'',
+        },
+      },
     },
     recommendedSequence: [
       '1. POST /api/init-db - Initialize database',
-      '2. POST /api/migrate - Create admin and basic data', 
+      '2. POST /api/migrate - Create admin and basic data',
       '3. POST /api/seed-users - Create dummy users (optional)',
-      '4. POST /api/rollback {"target":"all"} - Clean up when needed'
+      '4. POST /api/rollback {"target":"all"} - Clean up when needed',
     ],
     testCredentials: {
       super_admin: 'superadmin@claudecode.com / password123',
-      admin: 'ahmad.admin@claudecode.com / password123', 
+      admin: 'ahmad.admin@claudecode.com / password123',
       principal: 'bambang.principal@claudecode.com / password123',
       staff: 'andi.staff@claudecode.com / password123',
-      original_admin: 'admin@claudecode.com / password123'
-    }
+      original_admin: 'admin@claudecode.com / password123',
+    },
   });
 }

@@ -3,35 +3,35 @@ export enum UserRole {
   SUPER_ADMIN = 'super_admin',
   ADMIN = 'admin',
   KEPALA_SEKOLAH = 'kepala_sekolah',
-  USER = 'user'
+  USER = 'user',
 }
 
 // Task Status
 export enum TaskStatus {
   TODO = 'todo',
   IN_PROGRESS = 'in_progress',
-  DONE = 'done'
+  DONE = 'done',
 }
 
 // Task Priority
 export enum TaskPriority {
   LOW = 'low',
   MEDIUM = 'medium',
-  HIGH = 'high'
+  HIGH = 'high',
 }
 
 // Approval Status
 export enum ApprovalStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
-  REJECTED = 'rejected'
+  REJECTED = 'rejected',
 }
 
 // Document Types
 export enum DocumentType {
   DOCUMENTATION = 'documentation',
   PAYMENT = 'payment',
-  ATTENDANCE = 'attendance'
+  ATTENDANCE = 'attendance',
 }
 
 // User Interface Types
@@ -61,27 +61,42 @@ export interface Task {
   title: string;
   description?: string;
   assigned_to?: number;
+  assigned_user_name?: string; // Added for API response
   created_by?: number;
+  created_by_name?: string; // Added for API response
   status: TaskStatus;
   priority: TaskPriority;
   due_date?: string;
   approval_status?: ApprovalStatus;
   approved_by_user_id?: number;
+  approved_by_name?: string; // Added for API response
   approval_date?: string;
   created_at: string;
   updated_at: string;
+  subtasks?: Subtask[]; // Added subtasks array
+  subtasks_count?: number; // Added for progress tracking
+  completed_subtasks?: number; // Added for progress tracking
+}
+
+export interface SubtaskImage {
+  image_id: number;
+  url: string;
+  uploaded_at: string;
 }
 
 export interface Subtask {
   subtask_id: number;
-  relation_task_id: number;
-  subtask_title: string;
+  relation_task_id?: number;
+  title: string; // Updated to match API response
+  subtask_title?: string; // Keep for backward compatibility
   subtask_description?: string;
   assigned_to?: number;
   assigned_user_name?: string;
-  is_completed: boolean;
+  is_completed?: boolean;
+  status: string; // Added to match API response format
   created_at: string;
   updated_at: string;
+  images?: SubtaskImage[]; // Added images array
 }
 
 export interface Documentation {

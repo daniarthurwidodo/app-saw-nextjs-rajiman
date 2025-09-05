@@ -1,31 +1,34 @@
 export enum TaskStatus {
   TODO = 'todo',
   IN_PROGRESS = 'in_progress',
-  DONE = 'done'
+  DONE = 'done',
 }
 
 export enum TaskPriority {
   LOW = 'low',
   MEDIUM = 'medium',
-  HIGH = 'high'
+  HIGH = 'high',
 }
 
 export enum ApprovalStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
-  REJECTED = 'rejected'
+  REJECTED = 'rejected',
+}
+
+export interface SubtaskImage {
+  image_id: number;
+  url: string;
+  uploaded_at: string;
 }
 
 export interface Subtask {
   subtask_id: number;
-  relation_task_id: number;
-  subtask_title: string;
-  subtask_description?: string;
-  assigned_to?: number;
-  assigned_user_name?: string;
-  is_completed: boolean;
+  title: string;
+  status: string;
   created_at: string;
   updated_at: string;
+  images?: SubtaskImage[];
 }
 
 export interface Task {

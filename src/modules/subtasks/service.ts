@@ -1,7 +1,7 @@
 import { query } from '@/lib/db';
-import { 
-  Subtask, 
-  CreateSubtaskRequest, 
+import {
+  Subtask,
+  CreateSubtaskRequest,
   UpdateSubtaskRequest,
   SubtasksListResponse,
   SubtaskResponse,
@@ -11,7 +11,7 @@ import {
   SubtaskProgressSummary,
   SubtaskFilters,
   PaginationParams,
-  SubtasksError
+  SubtasksError,
 } from './types';
 import { SubtasksValidator } from './validation';
 
@@ -55,7 +55,7 @@ export class SubtasksService {
         LEFT JOIN tasks t ON s.relation_task_id = t.task_id
         ${whereClause}
       `;
-      const countResult = await query(countQuery, params) as any[];
+      const countResult = (await query(countQuery, params)) as any[];
       const total = countResult[0].total;
 
       // Calculate pagination
@@ -92,7 +92,7 @@ export class SubtasksService {
       queryParams.push(parseInt(pagination.limit.toString()));
       queryParams.push(parseInt(offset.toString()));
 
-      const subtasks = await query(subtasksQuery, queryParams) as Subtask[];
+      const subtasks = (await query(subtasksQuery, queryParams)) as Subtask[];
 
       return {
         success: true,
@@ -102,27 +102,22 @@ export class SubtasksService {
           page: pagination.page,
           limit: pagination.limit,
           total,
-          totalPages
-        }
+          totalPages,
+        },
       };
-
     } catch (error) {
       console.error('Get subtasks service error:', error);
-      throw new SubtasksError(
-        'An error occurred while fetching subtasks',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new SubtasksError('An error occurred while fetching subtasks', 500, 'INTERNAL_ERROR');
     }
   }
 
   static async getSubtasksByTask(taskId: number): Promise<SubtasksByTaskResponse> {
     try {
       // First, verify the task exists
-      const taskResult = await query(
+      const taskResult = (await query(
         'SELECT task_id, title, status, created_by, creator.name as created_by_name FROM tasks LEFT JOIN users creator ON tasks.created_by = creator.user_id WHERE task_id = ?',
         [taskId]
-      ) as any[];
+      )) as any[];
 
       if (taskResult.length === 0) {
         throw new SubtasksError('Task not found', 404, 'TASK_NOT_FOUND');
@@ -155,7 +150,7 @@ export class SubtasksService {
         ORDER BY s.created_at DESC
       `;
 
-      const subtasks = await query(subtasksQuery, [taskId]) as Subtask[];
+      const subtasks = (await query(subtasksQuery, [taskId])) as Subtask[];
 
       return {
         success: true,
@@ -165,10 +160,9 @@ export class SubtasksService {
           task_id: taskInfo.task_id,
           title: taskInfo.title,
           status: taskInfo.status,
-          created_by_name: taskInfo.created_by_name
-        }
+          created_by_name: taskInfo.created_by_name,
+        },
       };
-
     } catch (error) {
       if (error instanceof SubtasksError) {
         throw error;
@@ -208,20 +202,19 @@ export class SubtasksService {
         ORDER BY s.created_at DESC
       `;
 
-      const allSubtasks = await query(subtasksQuery) as Subtask[];
+      const allSubtasks = (await query(subtasksQuery)) as Subtask[];
 
       const subtasksByStatus = {
-        todo: allSubtasks.filter(subtask => subtask.subtask_status === 'todo'),
-        in_progress: allSubtasks.filter(subtask => subtask.subtask_status === 'in_progress'),
-        done: allSubtasks.filter(subtask => subtask.subtask_status === 'done')
+        todo: allSubtasks.filter((subtask) => subtask.subtask_status === 'todo'),
+        in_progress: allSubtasks.filter((subtask) => subtask.subtask_status === 'in_progress'),
+        done: allSubtasks.filter((subtask) => subtask.subtask_status === 'done'),
       };
 
       return {
         success: true,
         message: 'Subtasks retrieved successfully',
-        subtasks: subtasksByStatus
+        subtasks: subtasksByStatus,
       };
-
     } catch (error) {
       console.error('Get subtasks by status service error:', error);
       throw new SubtasksError(
@@ -234,7 +227,8 @@ export class SubtasksService {
 
   static async getSubtaskById(subtaskId: number): Promise<SubtaskResponse> {
     try {
-      const subtasks = await query(`
+      const subtasks = (await query(
+        `
         SELECT 
           s.subtask_id,
           s.relation_task_id,
@@ -255,7 +249,9 @@ export class SubtasksService {
         LEFT JOIN tasks t ON s.relation_task_id = t.task_id
         LEFT JOIN users task_creator ON t.created_by = task_creator.user_id
         WHERE s.subtask_id = ?
-      `, [subtaskId]) as Subtask[];
+      `,
+        [subtaskId]
+      )) as Subtask[];
 
       if (subtasks.length === 0) {
         throw new SubtasksError('Subtask not found', 404, 'SUBTASK_NOT_FOUND');
@@ -264,20 +260,15 @@ export class SubtasksService {
       return {
         success: true,
         message: 'Subtask retrieved successfully',
-        subtask: subtasks[0]
+        subtask: subtasks[0],
       };
-
     } catch (error) {
       if (error instanceof SubtasksError) {
         throw error;
       }
 
       console.error('Get subtask by id service error:', error);
-      throw new SubtasksError(
-        'An error occurred while fetching subtask',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new SubtasksError('An error occurred while fetching subtask', 500, 'INTERNAL_ERROR');
     }
   }
 
@@ -287,7 +278,7 @@ export class SubtasksService {
       const validationErrors = SubtasksValidator.validateCreateSubtask(subtaskData);
       if (validationErrors.length > 0) {
         throw new SubtasksError(
-          `Validation failed: ${validationErrors.map(e => e.message).join(', ')}`,
+          `Validation failed: ${validationErrors.map((e) => e.message).join(', ')}`,
           400,
           'VALIDATION_ERROR'
         );
@@ -297,25 +288,20 @@ export class SubtasksService {
       const sanitizedData = SubtasksValidator.sanitizeCreateSubtask(subtaskData);
 
       // Verify parent task exists
-      const tasks = await query(
-        'SELECT task_id FROM tasks WHERE task_id = ?',
-        [sanitizedData.relation_task_id]
-      ) as any[];
+      const tasks = (await query('SELECT task_id FROM tasks WHERE task_id = ?', [
+        sanitizedData.relation_task_id,
+      ])) as any[];
 
       if (tasks.length === 0) {
-        throw new SubtasksError(
-          'Parent task not found',
-          400,
-          'INVALID_TASK_ID'
-        );
+        throw new SubtasksError('Parent task not found', 400, 'INVALID_TASK_ID');
       }
 
       // Validate assigned user exists if provided
       if (sanitizedData.assigned_to) {
-        const users = await query(
+        const users = (await query(
           'SELECT user_id FROM users WHERE user_id = ? AND is_active = 1',
           [sanitizedData.assigned_to]
-        ) as any[];
+        )) as any[];
 
         if (users.length === 0) {
           throw new SubtasksError(
@@ -329,7 +315,7 @@ export class SubtasksService {
       const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       // Insert new subtask
-      const result = await query(
+      const result = (await query(
         `INSERT INTO subtasks (relation_task_id, subtask_title, subtask_description, assigned_to, subtask_date, created_at, updated_at) 
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -339,9 +325,9 @@ export class SubtasksService {
           sanitizedData.assigned_to,
           sanitizedData.subtask_date,
           currentTime,
-          currentTime
+          currentTime,
         ]
-      ) as any;
+      )) as any;
 
       // Get the created subtask
       const newSubtask = await this.getSubtaskById(result.insertId);
@@ -349,30 +335,28 @@ export class SubtasksService {
       return {
         success: true,
         message: 'Subtask created successfully',
-        subtask: newSubtask.subtask
+        subtask: newSubtask.subtask,
       };
-
     } catch (error) {
       if (error instanceof SubtasksError) {
         throw error;
       }
 
       console.error('Create subtask service error:', error);
-      throw new SubtasksError(
-        'An error occurred while creating subtask',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new SubtasksError('An error occurred while creating subtask', 500, 'INTERNAL_ERROR');
     }
   }
 
-  static async updateSubtask(subtaskId: number, updateData: UpdateSubtaskRequest): Promise<SubtaskResponse> {
+  static async updateSubtask(
+    subtaskId: number,
+    updateData: UpdateSubtaskRequest
+  ): Promise<SubtaskResponse> {
     try {
       // Validate input
       const validationErrors = SubtasksValidator.validateUpdateSubtask(updateData);
       if (validationErrors.length > 0) {
         throw new SubtasksError(
-          `Validation failed: ${validationErrors.map(e => e.message).join(', ')}`,
+          `Validation failed: ${validationErrors.map((e) => e.message).join(', ')}`,
           400,
           'VALIDATION_ERROR'
         );
@@ -386,10 +370,10 @@ export class SubtasksService {
 
       // Validate assigned user exists if provided
       if (sanitizedData.assigned_to) {
-        const users = await query(
+        const users = (await query(
           'SELECT user_id FROM users WHERE user_id = ? AND is_active = 1',
           [sanitizedData.assigned_to]
-        ) as any[];
+        )) as any[];
 
         if (users.length === 0) {
           throw new SubtasksError(
@@ -404,7 +388,7 @@ export class SubtasksService {
       const updateFields: string[] = [];
       const updateParams: any[] = [];
 
-      Object.keys(sanitizedData).forEach(key => {
+      Object.keys(sanitizedData).forEach((key) => {
         if (sanitizedData[key as keyof UpdateSubtaskRequest] !== undefined) {
           updateFields.push(`${key} = ?`);
           updateParams.push(sanitizedData[key as keyof UpdateSubtaskRequest]);
@@ -412,11 +396,7 @@ export class SubtasksService {
       });
 
       if (updateFields.length === 0) {
-        throw new SubtasksError(
-          'No fields to update',
-          400,
-          'NO_UPDATE_FIELDS'
-        );
+        throw new SubtasksError('No fields to update', 400, 'NO_UPDATE_FIELDS');
       }
 
       // Add updated_at
@@ -440,20 +420,15 @@ export class SubtasksService {
       return {
         success: true,
         message: 'Subtask updated successfully',
-        subtask: updatedSubtask.subtask
+        subtask: updatedSubtask.subtask,
       };
-
     } catch (error) {
       if (error instanceof SubtasksError) {
         throw error;
       }
 
       console.error('Update subtask service error:', error);
-      throw new SubtasksError(
-        'An error occurred while updating subtask',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new SubtasksError('An error occurred while updating subtask', 500, 'INTERNAL_ERROR');
     }
   }
 
@@ -467,20 +442,15 @@ export class SubtasksService {
 
       return {
         success: true,
-        message: 'Subtask deleted successfully'
+        message: 'Subtask deleted successfully',
       };
-
     } catch (error) {
       if (error instanceof SubtasksError) {
         throw error;
       }
 
       console.error('Delete subtask service error:', error);
-      throw new SubtasksError(
-        'An error occurred while deleting subtask',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new SubtasksError('An error occurred while deleting subtask', 500, 'INTERNAL_ERROR');
     }
   }
 
@@ -505,24 +475,23 @@ export class SubtasksService {
         ORDER BY completion_percentage DESC, t.created_at DESC
       `;
 
-      const progressData = await query(progressQuery) as any[];
+      const progressData = (await query(progressQuery)) as any[];
 
-      const progress: SubtaskProgressSummary[] = progressData.map(row => ({
+      const progress: SubtaskProgressSummary[] = progressData.map((row) => ({
         task_id: row.task_id,
         task_title: row.task_title,
         total_subtasks: row.total_subtasks || 0,
         completed_subtasks: row.completed_subtasks || 0,
         in_progress_subtasks: row.in_progress_subtasks || 0,
         todo_subtasks: row.todo_subtasks || 0,
-        completion_percentage: row.completion_percentage || 0
+        completion_percentage: row.completion_percentage || 0,
       }));
 
       return {
         success: true,
         message: 'Subtasks progress retrieved successfully',
-        progress
+        progress,
       };
-
     } catch (error) {
       console.error('Get subtasks progress service error:', error);
       throw new SubtasksError(

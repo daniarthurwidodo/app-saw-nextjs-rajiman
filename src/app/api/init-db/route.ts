@@ -121,16 +121,15 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: 'Database tables created successfully'
+      message: 'Database tables created successfully',
     });
-
   } catch (error) {
     console.error('Database initialization error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         message: 'Failed to initialize database',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

@@ -14,7 +14,7 @@ async function generateERD() {
     await generateFromFile(schemaPath, {
       outputFormat: 'svg',
       output: outputPath,
-      graphvizPath: null // Will use system's graphviz if installed
+      graphvizPath: null, // Will use system's graphviz if installed
     });
     console.log('✅ ERD diagram generated successfully!');
     console.log(`📍 Output location: ${outputPath}`);

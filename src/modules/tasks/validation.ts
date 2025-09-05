@@ -1,4 +1,12 @@
-import { TaskStatus, TaskPriority, ApprovalStatus, CreateTaskRequest, UpdateTaskRequest, TaskFilters, TasksError } from './types';
+import {
+  TaskStatus,
+  TaskPriority,
+  ApprovalStatus,
+  CreateTaskRequest,
+  UpdateTaskRequest,
+  TaskFilters,
+  TasksError,
+} from './types';
 
 export interface ValidationError {
   field: string;
@@ -37,9 +45,9 @@ export class TasksValidator {
 
     const validStatuses = Object.values(TaskStatus);
     if (!validStatuses.includes(status as TaskStatus)) {
-      return { 
-        field: 'status', 
-        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` 
+      return {
+        field: 'status',
+        message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`,
       };
     }
 
@@ -53,9 +61,9 @@ export class TasksValidator {
 
     const validPriorities = Object.values(TaskPriority);
     if (!validPriorities.includes(priority as TaskPriority)) {
-      return { 
-        field: 'priority', 
-        message: `Invalid priority. Must be one of: ${validPriorities.join(', ')}` 
+      return {
+        field: 'priority',
+        message: `Invalid priority. Must be one of: ${validPriorities.join(', ')}`,
       };
     }
 
@@ -65,9 +73,9 @@ export class TasksValidator {
   static validateUserId(userId: number | undefined): ValidationError | null {
     if (userId !== undefined) {
       if (!Number.isInteger(userId) || userId <= 0) {
-        return { 
-          field: 'assigned_to', 
-          message: 'User ID must be a positive integer' 
+        return {
+          field: 'assigned_to',
+          message: 'User ID must be a positive integer',
         };
       }
     }
@@ -79,9 +87,9 @@ export class TasksValidator {
     if (dueDate) {
       const date = new Date(dueDate);
       if (isNaN(date.getTime())) {
-        return { 
-          field: 'due_date', 
-          message: 'Invalid date format' 
+        return {
+          field: 'due_date',
+          message: 'Invalid date format',
         };
       }
     }
@@ -146,7 +154,7 @@ export class TasksValidator {
 
   static validateTaskId(taskId: string | number): number {
     const id = typeof taskId === 'string' ? parseInt(taskId) : taskId;
-    
+
     if (isNaN(id) || id <= 0) {
       throw new TasksError('Invalid task ID', 400, 'INVALID_TASK_ID');
     }
@@ -154,7 +162,10 @@ export class TasksValidator {
     return id;
   }
 
-  static validatePagination(page: string | number = 1, limit: string | number = 10): { page: number; limit: number } {
+  static validatePagination(
+    page: string | number = 1,
+    limit: string | number = 10
+  ): { page: number; limit: number } {
     const pageNum = typeof page === 'string' ? parseInt(page) : page;
     const limitNum = typeof limit === 'string' ? parseInt(limit) : limit;
 
@@ -212,7 +223,7 @@ export class TasksValidator {
       description: data.description ? this.sanitizeInput(data.description) : undefined,
       assigned_to: data.assigned_to,
       priority: data.priority || TaskPriority.MEDIUM,
-      due_date: data.due_date
+      due_date: data.due_date,
     };
   }
 

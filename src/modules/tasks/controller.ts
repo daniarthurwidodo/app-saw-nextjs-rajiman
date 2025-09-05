@@ -7,7 +7,7 @@ export class TasksController {
   static async getTasks(request: NextRequest): Promise<NextResponse> {
     try {
       const { searchParams } = new URL(request.url);
-      
+
       // Parse filters
       const filters = TasksValidator.validateFilters({
         status: searchParams.get('status'),
@@ -15,7 +15,7 @@ export class TasksController {
         assigned_to: searchParams.get('assigned_to'),
         created_by: searchParams.get('created_by'),
         approval_status: searchParams.get('approval_status'),
-        search: searchParams.get('search')
+        search: searchParams.get('search'),
       });
 
       // Parse pagination
@@ -29,7 +29,7 @@ export class TasksController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Get tasks controller error:', error);
-      
+
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -50,7 +50,7 @@ export class TasksController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Get tasks by status controller error:', error);
-      
+
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -65,7 +65,10 @@ export class TasksController {
     }
   }
 
-  static async getTaskById(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+  static async getTaskById(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+  ): Promise<NextResponse> {
     try {
       const taskId = TasksValidator.validateTaskId(params.id);
       const result = await TasksService.getTaskById(taskId);
@@ -73,7 +76,7 @@ export class TasksController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Get task by id controller error:', error);
-      
+
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -91,7 +94,7 @@ export class TasksController {
   static async createTask(request: NextRequest): Promise<NextResponse> {
     try {
       const body = await request.json();
-      
+
       // For now, using a hardcoded created_by value
       // In a real app, this would come from the authenticated user
       const createdBy = 1;
@@ -101,7 +104,7 @@ export class TasksController {
       return NextResponse.json(result, { status: 201 });
     } catch (error) {
       console.error('Create task controller error:', error);
-      
+
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -116,7 +119,10 @@ export class TasksController {
     }
   }
 
-  static async updateTask(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+  static async updateTask(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+  ): Promise<NextResponse> {
     try {
       const taskId = TasksValidator.validateTaskId(params.id);
       const body = await request.json();
@@ -126,7 +132,7 @@ export class TasksController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Update task controller error:', error);
-      
+
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -141,7 +147,10 @@ export class TasksController {
     }
   }
 
-  static async deleteTask(request: NextRequest, { params }: { params: { id: string } }): Promise<NextResponse> {
+  static async deleteTask(
+    request: NextRequest,
+    { params }: { params: { id: string } }
+  ): Promise<NextResponse> {
     try {
       const taskId = TasksValidator.validateTaskId(params.id);
       const result = await TasksService.deleteTask(taskId);
@@ -149,7 +158,7 @@ export class TasksController {
       return NextResponse.json(result);
     } catch (error) {
       console.error('Delete task controller error:', error);
-      
+
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },

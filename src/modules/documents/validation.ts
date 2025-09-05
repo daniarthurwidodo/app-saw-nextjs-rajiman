@@ -9,9 +9,22 @@ export interface ValidationError {
 export class DocumentsValidator {
   static readonly MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
   static readonly ALLOWED_EXTENSIONS = [
-    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-    'jpg', 'jpeg', 'png', 'gif', 'svg',
-    'txt', 'csv', 'zip', 'rar'
+    'pdf',
+    'doc',
+    'docx',
+    'xls',
+    'xlsx',
+    'ppt',
+    'pptx',
+    'jpg',
+    'jpeg',
+    'png',
+    'gif',
+    'svg',
+    'txt',
+    'csv',
+    'zip',
+    'rar',
   ];
   static readonly ALLOWED_MIME_TYPES = [
     'application/pdf',
@@ -28,7 +41,7 @@ export class DocumentsValidator {
     'text/plain',
     'text/csv',
     'application/zip',
-    'application/x-rar-compressed'
+    'application/x-rar-compressed',
   ];
 
   static validateFileName(fileName: string): ValidationError | null {
@@ -42,9 +55,9 @@ export class DocumentsValidator {
 
     const extension = fileName.split('.').pop()?.toLowerCase();
     if (!extension || !this.ALLOWED_EXTENSIONS.includes(extension)) {
-      return { 
-        field: 'file_name', 
-        message: `Invalid file type. Allowed types: ${this.ALLOWED_EXTENSIONS.join(', ')}` 
+      return {
+        field: 'file_name',
+        message: `Invalid file type. Allowed types: ${this.ALLOWED_EXTENSIONS.join(', ')}`,
       };
     }
 
@@ -70,9 +83,9 @@ export class DocumentsValidator {
       }
 
       if (fileSize > this.MAX_FILE_SIZE) {
-        return { 
-          field: 'file_size', 
-          message: `File size must not exceed ${this.MAX_FILE_SIZE / 1024 / 1024}MB` 
+        return {
+          field: 'file_size',
+          message: `File size must not exceed ${this.MAX_FILE_SIZE / 1024 / 1024}MB`,
         };
       }
     }
@@ -82,9 +95,9 @@ export class DocumentsValidator {
 
   static validateMimeType(mimeType: string | undefined): ValidationError | null {
     if (mimeType && !this.ALLOWED_MIME_TYPES.includes(mimeType)) {
-      return { 
-        field: 'mime_type', 
-        message: `Invalid MIME type. File type not supported.` 
+      return {
+        field: 'mime_type',
+        message: `Invalid MIME type. File type not supported.`,
       };
     }
 
@@ -98,9 +111,9 @@ export class DocumentsValidator {
 
     const validTypes = Object.values(DocumentType);
     if (!validTypes.includes(docType as DocumentType)) {
-      return { 
-        field: 'doc_type', 
-        message: `Invalid document type. Must be one of: ${validTypes.join(', ')}` 
+      return {
+        field: 'doc_type',
+        message: `Invalid document type. Must be one of: ${validTypes.join(', ')}`,
       };
     }
 
@@ -110,9 +123,9 @@ export class DocumentsValidator {
   static validateSubtaskId(subtaskId: number | undefined): ValidationError | null {
     if (subtaskId !== undefined) {
       if (!Number.isInteger(subtaskId) || subtaskId <= 0) {
-        return { 
-          field: 'subtask_id', 
-          message: 'Subtask ID must be a positive integer' 
+        return {
+          field: 'subtask_id',
+          message: 'Subtask ID must be a positive integer',
         };
       }
     }
@@ -146,7 +159,7 @@ export class DocumentsValidator {
 
   static validateDocumentId(documentId: string | number): number {
     const id = typeof documentId === 'string' ? parseInt(documentId) : documentId;
-    
+
     if (isNaN(id) || id <= 0) {
       throw new DocumentsError('Invalid document ID', 400, 'INVALID_DOCUMENT_ID');
     }
@@ -154,7 +167,10 @@ export class DocumentsValidator {
     return id;
   }
 
-  static validatePagination(page: string | number = 1, limit: string | number = 10): { page: number; limit: number } {
+  static validatePagination(
+    page: string | number = 1,
+    limit: string | number = 10
+  ): { page: number; limit: number } {
     const pageNum = typeof page === 'string' ? parseInt(page) : page;
     const limitNum = typeof limit === 'string' ? parseInt(limit) : limit;
 
@@ -206,7 +222,7 @@ export class DocumentsValidator {
       doc_type: data.doc_type,
       subtask_id: data.subtask_id,
       file_size: data.file_size,
-      mime_type: data.mime_type
+      mime_type: data.mime_type,
     };
   }
 }

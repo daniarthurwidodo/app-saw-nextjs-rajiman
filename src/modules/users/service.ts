@@ -1,15 +1,15 @@
 import bcrypt from 'bcryptjs';
 import { query } from '@/lib/db';
 import { UserRole } from '@/types';
-import { 
-  User, 
-  CreateUserRequest, 
+import {
+  User,
+  CreateUserRequest,
   UpdateUserRequest,
   UsersListResponse,
   UserResponse,
   UserFilters,
   PaginationParams,
-  UsersError
+  UsersError,
 } from './types';
 import { UsersValidator } from './validation';
 
@@ -51,7 +51,7 @@ export class UsersService {
 
       // Get total count
       const countQuery = `SELECT COUNT(*) as total FROM users u ${whereClause}`;
-      const countResult = await query(countQuery, params) as any[];
+      const countResult = (await query(countQuery, params)) as any[];
       const total = countResult[0].total;
 
       // Calculate pagination
@@ -82,7 +82,7 @@ export class UsersService {
       queryParams.push(parseInt(pagination.limit.toString()));
       queryParams.push(parseInt(offset.toString()));
 
-      const users = await query(usersQuery, queryParams) as User[];
+      const users = (await query(usersQuery, queryParams)) as User[];
 
       return {
         success: true,
@@ -92,23 +92,19 @@ export class UsersService {
           page: pagination.page,
           limit: pagination.limit,
           total,
-          totalPages
-        }
+          totalPages,
+        },
       };
-
     } catch (error) {
       console.error('Get users service error:', error);
-      throw new UsersError(
-        'An error occurred while fetching users',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new UsersError('An error occurred while fetching users', 500, 'INTERNAL_ERROR');
     }
   }
 
   static async getUserById(userId: number): Promise<UserResponse> {
     try {
-      const users = await query(`
+      const users = (await query(
+        `
         SELECT 
           u.user_id,
           u.name,
@@ -122,7 +118,9 @@ export class UsersService {
         FROM users u
         LEFT JOIN schools s ON u.school_id = s.sekolah_id
         WHERE u.user_id = ?
-      `, [userId]) as User[];
+      `,
+        [userId]
+      )) as User[];
 
       if (users.length === 0) {
         throw new UsersError('User not found', 404, 'USER_NOT_FOUND');
@@ -131,20 +129,15 @@ export class UsersService {
       return {
         success: true,
         message: 'User retrieved successfully',
-        user: users[0]
+        user: users[0],
       };
-
     } catch (error) {
       if (error instanceof UsersError) {
         throw error;
       }
 
       console.error('Get user by id service error:', error);
-      throw new UsersError(
-        'An error occurred while fetching user',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new UsersError('An error occurred while fetching user', 500, 'INTERNAL_ERROR');
     }
   }
 
@@ -154,7 +147,7 @@ export class UsersService {
       const validationErrors = UsersValidator.validateCreateUser(userData);
       if (validationErrors.length > 0) {
         throw new UsersError(
-          `Validation failed: ${validationErrors.map(e => e.message).join(', ')}`,
+          `Validation failed: ${validationErrors.map((e) => e.message).join(', ')}`,
           400,
           'VALIDATION_ERROR'
         );
@@ -164,32 +157,22 @@ export class UsersService {
       const sanitizedData = UsersValidator.sanitizeCreateUser(userData);
 
       // Check if email already exists
-      const existingUsers = await query(
-        'SELECT email FROM users WHERE email = ?',
-        [sanitizedData.email]
-      ) as any[];
+      const existingUsers = (await query('SELECT email FROM users WHERE email = ?', [
+        sanitizedData.email,
+      ])) as any[];
 
       if (existingUsers.length > 0) {
-        throw new UsersError(
-          'User with this email already exists',
-          409,
-          'EMAIL_EXISTS'
-        );
+        throw new UsersError('User with this email already exists', 409, 'EMAIL_EXISTS');
       }
 
       // Validate school_id if provided
       if (sanitizedData.school_id) {
-        const schools = await query(
-          'SELECT sekolah_id FROM schools WHERE sekolah_id = ?',
-          [sanitizedData.school_id]
-        ) as any[];
+        const schools = (await query('SELECT sekolah_id FROM schools WHERE sekolah_id = ?', [
+          sanitizedData.school_id,
+        ])) as any[];
 
         if (schools.length === 0) {
-          throw new UsersError(
-            'Invalid school ID',
-            400,
-            'INVALID_SCHOOL_ID'
-          );
+          throw new UsersError('Invalid school ID', 400, 'INVALID_SCHOOL_ID');
         }
       }
 
@@ -198,7 +181,7 @@ export class UsersService {
       const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       // Insert new user
-      const result = await query(
+      const result = (await query(
         `INSERT INTO users (name, email, password, role, school_id, created_at, updated_at, is_active) 
          VALUES (?, ?, ?, ?, ?, ?, ?, 1)`,
         [
@@ -208,9 +191,9 @@ export class UsersService {
           sanitizedData.role,
           sanitizedData.school_id || null,
           currentTime,
-          currentTime
+          currentTime,
         ]
-      ) as any;
+      )) as any;
 
       // Get the created user
       const newUser = await this.getUserById(result.insertId);
@@ -218,20 +201,15 @@ export class UsersService {
       return {
         success: true,
         message: 'User created successfully',
-        user: newUser.user
+        user: newUser.user,
       };
-
     } catch (error) {
       if (error instanceof UsersError) {
         throw error;
       }
 
       console.error('Create user service error:', error);
-      throw new UsersError(
-        'An error occurred while creating user',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new UsersError('An error occurred while creating user', 500, 'INTERNAL_ERROR');
     }
   }
 
@@ -241,7 +219,7 @@ export class UsersService {
       const validationErrors = UsersValidator.validateUpdateUser(updateData);
       if (validationErrors.length > 0) {
         throw new UsersError(
-          `Validation failed: ${validationErrors.map(e => e.message).join(', ')}`,
+          `Validation failed: ${validationErrors.map((e) => e.message).join(', ')}`,
           400,
           'VALIDATION_ERROR'
         );
@@ -255,33 +233,24 @@ export class UsersService {
 
       // Check if email already exists (if email is being updated)
       if (sanitizedData.email) {
-        const existingUsers = await query(
+        const existingUsers = (await query(
           'SELECT user_id FROM users WHERE email = ? AND user_id != ?',
           [sanitizedData.email, userId]
-        ) as any[];
+        )) as any[];
 
         if (existingUsers.length > 0) {
-          throw new UsersError(
-            'Email already exists',
-            409,
-            'EMAIL_EXISTS'
-          );
+          throw new UsersError('Email already exists', 409, 'EMAIL_EXISTS');
         }
       }
 
       // Validate school_id if provided
       if (sanitizedData.school_id) {
-        const schools = await query(
-          'SELECT sekolah_id FROM schools WHERE sekolah_id = ?',
-          [sanitizedData.school_id]
-        ) as any[];
+        const schools = (await query('SELECT sekolah_id FROM schools WHERE sekolah_id = ?', [
+          sanitizedData.school_id,
+        ])) as any[];
 
         if (schools.length === 0) {
-          throw new UsersError(
-            'Invalid school ID',
-            400,
-            'INVALID_SCHOOL_ID'
-          );
+          throw new UsersError('Invalid school ID', 400, 'INVALID_SCHOOL_ID');
         }
       }
 
@@ -289,7 +258,7 @@ export class UsersService {
       const updateFields: string[] = [];
       const updateParams: any[] = [];
 
-      Object.keys(sanitizedData).forEach(key => {
+      Object.keys(sanitizedData).forEach((key) => {
         if (sanitizedData[key as keyof UpdateUserRequest] !== undefined) {
           updateFields.push(`${key} = ?`);
           updateParams.push(sanitizedData[key as keyof UpdateUserRequest]);
@@ -297,11 +266,7 @@ export class UsersService {
       });
 
       if (updateFields.length === 0) {
-        throw new UsersError(
-          'No fields to update',
-          400,
-          'NO_UPDATE_FIELDS'
-        );
+        throw new UsersError('No fields to update', 400, 'NO_UPDATE_FIELDS');
       }
 
       // Add updated_at
@@ -325,20 +290,15 @@ export class UsersService {
       return {
         success: true,
         message: 'User updated successfully',
-        user: updatedUser.user
+        user: updatedUser.user,
       };
-
     } catch (error) {
       if (error instanceof UsersError) {
         throw error;
       }
 
       console.error('Update user service error:', error);
-      throw new UsersError(
-        'An error occurred while updating user',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new UsersError('An error occurred while updating user', 500, 'INTERNAL_ERROR');
     }
   }
 
@@ -349,34 +309,30 @@ export class UsersService {
 
       // Soft delete by setting is_active to false
       const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      
-      await query(
-        'UPDATE users SET is_active = 0, updated_at = ? WHERE user_id = ?',
-        [currentTime, userId]
-      );
+
+      await query('UPDATE users SET is_active = 0, updated_at = ? WHERE user_id = ?', [
+        currentTime,
+        userId,
+      ]);
 
       return {
         success: true,
-        message: 'User deleted successfully'
+        message: 'User deleted successfully',
       };
-
     } catch (error) {
       if (error instanceof UsersError) {
         throw error;
       }
 
       console.error('Delete user service error:', error);
-      throw new UsersError(
-        'An error occurred while deleting user',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new UsersError('An error occurred while deleting user', 500, 'INTERNAL_ERROR');
     }
   }
 
   static async getUsersByRole(role: UserRole): Promise<User[]> {
     try {
-      const users = await query(`
+      const users = (await query(
+        `
         SELECT 
           u.user_id,
           u.name,
@@ -391,23 +347,21 @@ export class UsersService {
         LEFT JOIN schools s ON u.school_id = s.sekolah_id
         WHERE u.role = ? AND u.is_active = 1
         ORDER BY u.name
-      `, [role]) as User[];
+      `,
+        [role]
+      )) as User[];
 
       return users;
-
     } catch (error) {
       console.error('Get users by role service error:', error);
-      throw new UsersError(
-        'An error occurred while fetching users by role',
-        500,
-        'INTERNAL_ERROR'
-      );
+      throw new UsersError('An error occurred while fetching users by role', 500, 'INTERNAL_ERROR');
     }
   }
 
   static async getUsersBySchool(schoolId: number): Promise<User[]> {
     try {
-      const users = await query(`
+      const users = (await query(
+        `
         SELECT 
           u.user_id,
           u.name,
@@ -422,10 +376,11 @@ export class UsersService {
         LEFT JOIN schools s ON u.school_id = s.sekolah_id
         WHERE u.school_id = ? AND u.is_active = 1
         ORDER BY u.role, u.name
-      `, [schoolId]) as User[];
+      `,
+        [schoolId]
+      )) as User[];
 
       return users;
-
     } catch (error) {
       console.error('Get users by school service error:', error);
       throw new UsersError(

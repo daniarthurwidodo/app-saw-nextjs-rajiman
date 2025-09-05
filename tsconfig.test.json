@@ -6,10 +6,5 @@
     "isolatedModules": true,
     "types": ["jest", "node", "@testing-library/jest-dom"]
   },
-  "include": [
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "jest.setup.ts",
-    "jest.config.ts"
-  ]
+  "include": ["**/*.test.ts", "**/*.test.tsx", "jest.setup.ts", "jest.config.ts"]
 }

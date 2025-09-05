@@ -1,31 +1,21 @@
-import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 
 interface SpinnerProps {
   className?: string;
-  size?: "sm" | "md" | "lg";
-  "data-testid"?: string;
+  size?: 'sm' | 'md' | 'lg';
+  'data-testid'?: string;
 }
 
 const sizeClasses = {
-  sm: "h-4 w-4",
-  md: "h-6 w-6", 
-  lg: "h-8 w-8"
+  sm: 'h-4 w-4',
+  md: 'h-6 w-6',
+  lg: 'h-8 w-8',
 };
 
-export function Spinner({ className, size = "md", "data-testid": testId }: SpinnerProps) {
+export function Spinner({ className, size = 'md', 'data-testid': testId }: SpinnerProps) {
   return (
-    <Loader2 
-      data-testid={testId}
-      className={cn("animate-spin", sizeClasses[size], className)}
-    />
-  );
-        className
-      )}
-      {...props}
-        className
-      )} 
-    />
+    <Loader2 data-testid={testId} className={cn('animate-spin', sizeClasses[size], className)} />
   );
 }
 

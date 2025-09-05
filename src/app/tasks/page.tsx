@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import KanbanBoard from '@/components/KanbanBoard';
@@ -23,7 +23,7 @@ export default function TasksPage() {
 
   const handleFormSuccess = () => {
     // Trigger a refresh of the Kanban board
-    setRefreshBoard(prev => prev + 1);
+    setRefreshBoard((prev) => prev + 1);
   };
 
   const handleCloseForm = () => {
@@ -39,7 +39,7 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className='container mx-auto p-6'>
       <KanbanBoard
         onCreateTask={handleCreateTask}
         onEditTask={handleEditTask}
@@ -54,7 +54,7 @@ export default function TasksPage() {
         onSuccess={handleFormSuccess}
       />
 
-      <Toaster position="top-right" />
+      <Toaster position='top-right' />
     </div>
   );
 }

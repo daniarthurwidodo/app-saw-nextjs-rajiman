@@ -8,20 +8,19 @@ export class AuthController {
       const body = await request.json();
       const loginData: LoginRequest = {
         email: body.email,
-        password: body.password
+        password: body.password,
       };
 
       const result = await AuthService.login(loginData);
-      
-      return NextResponse.json(result, { status: 200 });
 
+      return NextResponse.json(result, { status: 200 });
     } catch (error) {
       if (error instanceof AuthenticationError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -32,7 +31,7 @@ export class AuthController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -47,20 +46,19 @@ export class AuthController {
         email: body.email,
         password: body.password,
         role: body.role,
-        school_id: body.school_id
+        school_id: body.school_id,
       };
 
       const result = await AuthService.register(registerData);
-      
-      return NextResponse.json(result, { status: 201 });
 
+      return NextResponse.json(result, { status: 201 });
     } catch (error) {
       if (error instanceof AuthenticationError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -71,7 +69,7 @@ export class AuthController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -90,27 +88,26 @@ export class AuthController {
           {
             success: false,
             message: 'User ID is required',
-            code: 'MISSING_USER_ID'
+            code: 'MISSING_USER_ID',
           },
           { status: 400 }
         );
       }
 
       const user = await AuthService.getUserById(parseInt(userId));
-      
+
       return NextResponse.json({
         success: true,
         message: 'Profile retrieved successfully',
-        user
+        user,
       });
-
     } catch (error) {
       if (error instanceof AuthenticationError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -121,7 +118,7 @@ export class AuthController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );
@@ -138,26 +135,25 @@ export class AuthController {
           {
             success: false,
             message: 'User ID and new password are required',
-            code: 'MISSING_PARAMETERS'
+            code: 'MISSING_PARAMETERS',
           },
           { status: 400 }
         );
       }
 
       await AuthService.updateUserPassword(parseInt(userId), newPassword);
-      
+
       return NextResponse.json({
         success: true,
-        message: 'Password updated successfully'
+        message: 'Password updated successfully',
       });
-
     } catch (error) {
       if (error instanceof AuthenticationError) {
         return NextResponse.json(
           {
             success: false,
             message: error.message,
-            code: error.code
+            code: error.code,
           },
           { status: error.status }
         );
@@ -168,7 +164,7 @@ export class AuthController {
         {
           success: false,
           message: 'Internal server error',
-          code: 'INTERNAL_ERROR'
+          code: 'INTERNAL_ERROR',
         },
         { status: 500 }
       );

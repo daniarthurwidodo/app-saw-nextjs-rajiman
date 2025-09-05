@@ -5,15 +5,14 @@ import { query } from '@/lib/db';
 export async function POST() {
   try {
     // Check if admin user already exists
-    const existingAdmin = await query(
-      'SELECT email FROM users WHERE email = ?',
-      ['admin@claudecode.com']
-    ) as any[];
+    const existingAdmin = (await query('SELECT email FROM users WHERE email = ?', [
+      'admin@claudecode.com',
+    ])) as any[];
 
     if (existingAdmin.length > 0) {
       return NextResponse.json({
         success: false,
-        message: 'Default admin user already exists'
+        message: 'Default admin user already exists',
       });
     }
 
@@ -31,7 +30,7 @@ export async function POST() {
         hashedPassword,
         'super_admin',
         currentTime,
-        currentTime
+        currentTime,
       ]
     );
 
@@ -43,7 +42,16 @@ export async function POST() {
        ('SMP 05 Bandung', 'Jl. Asia Afrika No. 456, Bandung', '022-7654321', ?, ?),
        ('SMA 03 Surabaya', 'Jl. Pahlawan No. 789, Surabaya', '031-9876543', ?, ?),
        ('SDN 12 Medan', 'Jl. Gatot Subroto No. 321, Medan', '061-5432109', ?, ?)`,
-      [currentTime, currentTime, currentTime, currentTime, currentTime, currentTime, currentTime, currentTime]
+      [
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+      ]
     );
 
     // Insert sample criteria for decision support
@@ -55,7 +63,18 @@ export async function POST() {
        ('Teacher Quality', 20.0, 'Teacher qualifications and performance', 1, ?, ?),
        ('Student Attendance', 15.0, 'Student attendance and participation rates', 1, ?, ?),
        ('Community Engagement', 10.0, 'Parent and community involvement', 1, ?, ?)`,
-      [currentTime, currentTime, currentTime, currentTime, currentTime, currentTime, currentTime, currentTime, currentTime, currentTime]
+      [
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+        currentTime,
+      ]
     );
 
     return NextResponse.json({
@@ -64,21 +83,20 @@ export async function POST() {
       credentials: {
         email: 'admin@claudecode.com',
         password: 'password123',
-        role: 'super_admin'
+        role: 'super_admin',
       },
       nextSteps: {
         seedUsers: 'Run POST /api/seed-users to create dummy users for all roles',
-        rollback: 'Run POST /api/rollback with {"target": "all"} to reset data'
-      }
+        rollback: 'Run POST /api/rollback with {"target": "all"} to reset data',
+      },
     });
-
   } catch (error) {
     console.error('Migration error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         message: 'Migration failed',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );

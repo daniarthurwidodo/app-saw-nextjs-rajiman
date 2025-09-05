@@ -63,9 +63,9 @@ export class UsersValidator {
 
     const validRoles = Object.values(UserRole);
     if (!validRoles.includes(role as UserRole)) {
-      return { 
-        field: 'role', 
-        message: `Invalid role. Must be one of: ${validRoles.join(', ')}` 
+      return {
+        field: 'role',
+        message: `Invalid role. Must be one of: ${validRoles.join(', ')}`,
       };
     }
 
@@ -75,9 +75,9 @@ export class UsersValidator {
   static validateSchoolId(schoolId: number | undefined): ValidationError | null {
     if (schoolId !== undefined) {
       if (!Number.isInteger(schoolId) || schoolId <= 0) {
-        return { 
-          field: 'school_id', 
-          message: 'School ID must be a positive integer' 
+        return {
+          field: 'school_id',
+          message: 'School ID must be a positive integer',
         };
       }
     }
@@ -128,9 +128,9 @@ export class UsersValidator {
     if (schoolIdError) errors.push(schoolIdError);
 
     if (data.is_active !== undefined && typeof data.is_active !== 'boolean') {
-      errors.push({ 
-        field: 'is_active', 
-        message: 'is_active must be a boolean value' 
+      errors.push({
+        field: 'is_active',
+        message: 'is_active must be a boolean value',
       });
     }
 
@@ -139,7 +139,7 @@ export class UsersValidator {
 
   static validateUserId(userId: string | number): number {
     const id = typeof userId === 'string' ? parseInt(userId) : userId;
-    
+
     if (isNaN(id) || id <= 0) {
       throw new UsersError('Invalid user ID', 400, 'INVALID_USER_ID');
     }
@@ -147,7 +147,10 @@ export class UsersValidator {
     return id;
   }
 
-  static validatePagination(page: string | number = 1, limit: string | number = 10): { page: number; limit: number } {
+  static validatePagination(
+    page: string | number = 1,
+    limit: string | number = 10
+  ): { page: number; limit: number } {
     const pageNum = typeof page === 'string' ? parseInt(page) : page;
     const limitNum = typeof limit === 'string' ? parseInt(limit) : limit;
 
@@ -199,7 +202,7 @@ export class UsersValidator {
       email: this.sanitizeInput(data.email.toLowerCase()),
       password: data.password, // Don't sanitize password
       role: data.role,
-      school_id: data.school_id
+      school_id: data.school_id,
     };
   }
 

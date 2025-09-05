@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 
@@ -26,10 +26,10 @@ export function useSettings() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch('/api/settings');
       const data = await response.json();
-      
+
       if (data.success) {
         setSettings(data.settings);
       } else {
@@ -37,7 +37,7 @@ export function useSettings() {
         // Use default settings if API fails
         setSettings({
           app_name: 'Claude Code - School Management System',
-          app_description: 'A comprehensive school management and task tracking system'
+          app_description: 'A comprehensive school management and task tracking system',
         });
       }
     } catch (error) {
@@ -46,7 +46,7 @@ export function useSettings() {
       // Use default settings if API fails
       setSettings({
         app_name: 'Claude Code - School Management System',
-        app_description: 'A comprehensive school management and task tracking system'
+        app_description: 'A comprehensive school management and task tracking system',
       });
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ export function useSettings() {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         setSettings(data.settings);
         return { success: true };
@@ -87,6 +87,6 @@ export function useSettings() {
     error,
     fetchSettings,
     updateSettings,
-    getSetting
+    getSetting,
   };
 }

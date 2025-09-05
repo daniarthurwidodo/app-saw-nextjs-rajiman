@@ -1,6 +1,7 @@
 # Development Tasks
 
 ## ✅ Completed
+
 - [x] Create Next.js 15 app with TypeScript and Tailwind CSS
 - [x] Initialize git repository
 - [x] Setup project documentation (CLAUDE.md, README.md, PRD.md)
@@ -20,12 +21,14 @@
 - [x] Add rollback functionality for migrations
 
 ## 🔄 In Progress
+
 - [ ] Create user profile management pages
 - [ ] Implement file upload and document management
 - [ ] Add data visualization components (charts, graphs)
 - [ ] Add subtasks and approval workflows
 
 ## ✅ Recently Completed
+
 - [x] Add task management module with Kanban board
 - [x] Implement drag and drop functionality for tasks
 - [x] Create comprehensive task CRUD operations
@@ -34,12 +37,14 @@
 - [x] Fix datetime format issues for MySQL integration
 
 ## 📋 Pending - Core Features
+
 - [ ] Create reports and analytics module
 - [ ] Add real-time notifications system
 - [ ] Create criteria management for decision support
 - [ ] Implement decision support system
 
 ## 📋 Pending - Enhancement Features
+
 - [ ] Add role-based route protection middleware
 - [ ] Implement JWT token management
 - [ ] Add password reset functionality
@@ -49,6 +54,7 @@
 - [ ] Create export functionality (PDF, Excel)
 
 ## 🧪 Pending - Testing & Deployment
+
 - [ ] Write unit tests for modules
 - [ ] Add integration tests for API endpoints
 - [ ] Setup E2E testing with Playwright
@@ -59,6 +65,7 @@
 - [ ] Add security headers and CORS configuration
 
 ## 🛠 Technical Debt
+
 - [ ] Add API rate limiting
 - [ ] Implement database query optimization
 - [ ] Add caching layer (Redis)
@@ -68,9 +75,10 @@
 - [ ] Add API documentation with OpenAPI/Swagger
 
 ## 📊 Architecture Completed
+
 - **Modular Structure**: Separated business logic into modules
 - **MVC Pattern**: Controller → Service → Database layers
-- **Input Validation**: Comprehensive validation and sanitization  
+- **Input Validation**: Comprehensive validation and sanitization
 - **Error Handling**: Structured error classes and responses
 - **Database Layer**: Connection pooling and query utilities
 - **Migration System**: Database initialization and seeding

@@ -47,7 +47,7 @@ describe('Settings Page', () => {
   beforeEach(() => {
     // Reset all mocks before each test
     jest.clearAllMocks();
-    
+
     // Mock useSettings implementation
     (useSettings as jest.Mock).mockReturnValue({
       settings: mockSettings,
@@ -121,9 +121,11 @@ describe('Settings Page', () => {
     });
 
     // Check if updateSettings was called with correct values
-    expect(updateSettings).toHaveBeenCalledWith(expect.objectContaining({
-      system_name: 'New System Name',
-    }));
+    expect(updateSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        system_name: 'New System Name',
+      })
+    );
 
     // Check for success toast
     expect(toast.success).toHaveBeenCalled();
@@ -203,9 +205,11 @@ describe('Settings Page', () => {
     });
 
     // Check if updateSettings was called with correct values
-    expect(updateSettings).toHaveBeenCalledWith(expect.objectContaining({
-      theme: 'dark',
-    }));
+    expect(updateSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        theme: 'dark',
+      })
+    );
   });
 
   it('updates security settings', async () => {
@@ -234,9 +238,11 @@ describe('Settings Page', () => {
     });
 
     // Check if updateSettings was called with correct values
-    expect(updateSettings).toHaveBeenCalledWith(expect.objectContaining({
-      password_min_length: 10,
-      session_timeout: 60,
-    }));
+    expect(updateSettings).toHaveBeenCalledWith(
+      expect.objectContaining({
+        password_min_length: 10,
+        session_timeout: 60,
+      })
+    );
   });
 });

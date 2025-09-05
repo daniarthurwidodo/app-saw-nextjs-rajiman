@@ -1,0 +1,394 @@
+{
+  "info": {
+    "name": "School Management System API",
+    "description": "Comprehensive API collection for the School Management System with Tasks and Subtasks",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@claudecode.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks Management",
+      "item": [
+        {
+          "name": "Get All Tasks (with Subtasks & Images)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks"]
+            },
+            "description": "Retrieves all tasks with their subtasks and images in nested format"
+          }
+        },
+        {
+          "name": "Get Tasks by Status (Kanban)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/kanban",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "kanban"]
+            },
+            "description": "Returns tasks grouped by status (todo, in_progress, done)"
+          }
+        },
+        {
+          "name": "Get Task by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Task",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"New Task Example\",\n  \"description\": \"Task description here\",\n  \"assigned_to\": 1,\n  \"priority\": \"high\",\n  \"due_date\": \"2024-12-31\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks"]
+            }
+          }
+        },
+        {
+          "name": "Update Task",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Task Title\",\n  \"status\": \"in_progress\",\n  \"priority\": \"medium\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Task",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Subtasks Management",
+      "item": [
+        {
+          "name": "Get All Subtasks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks"]
+            }
+          }
+        },
+        {
+          "name": "Get Subtasks by Task ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/by-task/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "by-task", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Subtask by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Subtask",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"task_id\": 1,\n  \"title\": \"New Subtask\",\n  \"description\": \"Subtask description\",\n  \"assigned_to\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks"]
+            }
+          }
+        },
+        {
+          "name": "Update Subtask",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Subtask\",\n  \"is_completed\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Subtask",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users Management",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get Users by Role",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/by-role?role=admin",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "by-role"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "admin"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated User Name\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Database Operations",
+      "item": [
+        {
+          "name": "Initialize Database",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/init-db",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "init-db"]
+            }
+          }
+        },
+        {
+          "name": "Migrate Database",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/migrate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "migrate"]
+            }
+          }
+        },
+        {
+          "name": "Seed Users",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/seed-users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "seed-users"]
+            }
+          }
+        },
+        {
+          "name": "Rollback Database",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/rollback",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rollback"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

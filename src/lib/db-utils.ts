@@ -1,6 +1,6 @@
 import { prisma } from './prisma';
 import { TaskStatus, Role, DocType } from '@prisma/client';
-import type { 
+import type {
   Task,
   Subtask,
   Documentation,
@@ -8,7 +8,7 @@ import type {
   AppSetting,
   School,
   User,
-  Prisma
+  Prisma,
 } from '@prisma/client';
 
 type CreateTaskInput = {
@@ -30,26 +30,28 @@ type CreateTaskInput = {
 // Task-related functions
 export async function getTasks(includeRelations = true) {
   return prisma.task.findMany({
-    include: includeRelations ? {
-      assignedUser: true,
-      creator: true,
-      approver: true,
-      subtasks: {
-        include: {
-          assignedUser: true
+    include: includeRelations
+      ? {
+          assignedUser: true,
+          creator: true,
+          approver: true,
+          subtasks: {
+            include: {
+              assignedUser: true,
+            },
+          },
         }
-      }
-    } : undefined,
+      : undefined,
     orderBy: {
-      createdAt: 'desc'
-    }
+      createdAt: 'desc',
+    },
   });
 }
 
-export async function getTasksByStatus(status: Prisma.Enumerable<Prisma.TaskStatusType>) {
+export async function getTasksByStatus(status: any) {
   return prisma.task.findMany({
     where: {
-      status
+      status,
     },
     include: {
       assignedUser: true,
@@ -57,13 +59,13 @@ export async function getTasksByStatus(status: Prisma.Enumerable<Prisma.TaskStat
       approver: true,
       subtasks: {
         include: {
-          assignedUser: true
-        }
-      }
+          assignedUser: true,
+        },
+      },
     },
     orderBy: {
-      createdAt: 'desc'
-    }
+      createdAt: 'desc',
+    },
   });
 }
 
@@ -78,14 +80,16 @@ export async function createTask(data: any) {
       priority: data.priority || 'medium',
       dueDate: data.dueDate ? new Date(data.dueDate) : null,
       approvalStatus: data.approvalStatus || 'pending',
-      subtasks: data.subtasks ? {
-        create: data.subtasks.map((subtask: any) => ({
-          title: subtask.title,
-          description: subtask.description,
-          assignedTo: subtask.assignedTo,
-          isCompleted: subtask.isCompleted || false
-        }))
-      } : undefined
+      subtasks: data.subtasks
+        ? {
+            create: data.subtasks.map((subtask: any) => ({
+              title: subtask.title,
+              description: subtask.description,
+              assignedTo: subtask.assignedTo,
+              isCompleted: subtask.isCompleted || false,
+            })),
+          }
+        : undefined,
     },
     include: {
       assignedUser: true,
@@ -93,10 +97,10 @@ export async function createTask(data: any) {
       approver: true,
       subtasks: {
         include: {
-          assignedUser: true
-        }
-      }
-    }
+          assignedUser: true,
+        },
+      },
+    },
   });
 }
 
@@ -108,12 +112,12 @@ export async function createSubtask(data: any) {
       title: data.title,
       description: data.description,
       assignedTo: data.assignedTo,
-      isCompleted: data.isCompleted || false
+      isCompleted: data.isCompleted || false,
     },
     include: {
       assignedUser: true,
-      task: true
-    }
+      task: true,
+    },
   });
 }
 
@@ -124,26 +128,27 @@ export async function updateSubtask(id: number, data: any) {
       title: data.title,
       description: data.description,
       assignedTo: data.assignedTo,
-      isCompleted: data.isCompleted
+      isCompleted: data.isCompleted,
     },
     include: {
       assignedUser: true,
-      task: true
-    }
+      task: true,
+    },
   });
 }
 
 // User-related functions
 export async function getUsers(role?: string) {
   return prisma.user.findMany({
-    where: role ? {
-      role: role as any
-    } : undefined,
+    where: role
+      ? {
+          role: role as any,
+        }
+      : undefined,
     include: {
-      school: true,
       assignedTasks: true,
-      createdTasks: true
-    }
+      createdTasks: true,
+    },
   });
 }
 
@@ -151,27 +156,23 @@ export async function getUserById(id: number) {
   return prisma.user.findUnique({
     where: { id },
     include: {
-      school: true,
       assignedTasks: true,
-      createdTasks: true
-    }
+      createdTasks: true,
+    },
   });
 }
 
 // Settings-related functions
 export async function getSettings() {
   return prisma.appSetting.findMany({
-    orderBy: [
-      { category: 'asc' },
-      { key: 'asc' }
-    ]
+    orderBy: [{ category: 'asc' }, { key: 'asc' }],
   });
 }
 
 export async function updateSetting(key: string, value: string) {
   return prisma.appSetting.update({
     where: { key },
-    data: { value }
+    data: { value },
   });
 }
 
@@ -180,8 +181,7 @@ export async function getSchools() {
   return prisma.school.findMany({
     include: {
       principal: true,
-      users: true
-    }
+    },
   });
 }
 
@@ -190,11 +190,11 @@ export async function getReports() {
   return prisma.report.findMany({
     include: {
       task: true,
-      creator: true
+      creator: true,
     },
     orderBy: {
-      createdAt: 'desc'
-    }
+      createdAt: 'desc',
+    },
   });
 }
 
@@ -205,28 +205,30 @@ export async function createReport(data: any) {
       createdBy: data.createdBy,
       reportData: data.reportData,
       rating: data.rating,
-      comment: data.comment
+      comment: data.comment,
     },
     include: {
       task: true,
-      creator: true
-    }
+      creator: true,
+    },
   });
 }
 
 // Documentation-related functions
 export async function getDocumentation(subtaskId?: number) {
   return prisma.documentation.findMany({
-    where: subtaskId ? {
-      subtaskId
-    } : undefined,
+    where: subtaskId
+      ? {
+          subtaskId,
+        }
+      : undefined,
     include: {
       subtask: true,
-      uploader: true
+      uploader: true,
     },
     orderBy: {
-      uploadedAt: 'desc'
-    }
+      uploadedAt: 'desc',
+    },
   });
 }
 
@@ -237,11 +239,11 @@ export async function createDocumentation(data: any) {
       docType: data.docType,
       filePath: data.filePath,
       fileName: data.fileName,
-      uploadedBy: data.uploadedBy
+      uploadedBy: data.uploadedBy,
     },
     include: {
       subtask: true,
-      uploader: true
-    }
+      uploader: true,
+    },
   });
 }
