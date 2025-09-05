@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSettings } from "@/hooks/useSettings";
+import { useState, useEffect } from "react";
 
 const navigation = [
   {
@@ -35,6 +38,15 @@ const navigation = [
     ),
   },
   {
+    name: "Documents",
+    href: "/documents",
+    icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+  },
+  {
     name: "Reports",
     href: "/reports",
     icon: (
@@ -57,11 +69,41 @@ const navigation = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const { getSetting } = useSettings();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Mock user data if not authenticated - in real app this would redirect to login
+    if (!user) {
+      // For demo purposes, using mock data
+      setCurrentUser({
+        name: "Admin User",
+        email: "admin@school-system.com",
+        role: "Super Admin"
+      });
+    } else {
+      setCurrentUser(user);
+    }
+  }, [user]);
+
+  const appName = getSetting('app_name', 'Claude Code');
+
+  const handleLogout = () => {
+    if (user) {
+      logout();
+    } else {
+      // For mock logout, just redirect
+      window.location.href = '/login';
+    }
+  };
 
   return (
     <div className="flex flex-col w-64 bg-white border-r border-gray-200 min-h-screen">
       <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
-        <h1 className="text-xl font-bold text-gray-800">Claude Code</h1>
+        <h1 className="text-lg font-bold text-gray-800 text-center leading-tight">
+          {appName}
+        </h1>
       </div>
       
       <nav className="flex-1 px-4 py-4 space-y-2">
@@ -86,29 +128,32 @@ export default function Sidebar() {
       </nav>
       
       <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center mb-4">
-          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-            <svg className="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
-          </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium text-gray-900">User Name</p>
-            <p className="text-xs text-gray-500">user@example.com</p>
-          </div>
-        </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full"
-          onClick={() => {
-            if (typeof window !== 'undefined') {
-              window.location.href = '/login';
-            }
-          }}
-        >
-          Sign out
-        </Button>
+        {currentUser && (
+          <>
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-medium">
+                  {currentUser.name?.split(' ').map((n: string) => n[0]).join('').slice(0, 2) || 'U'}
+                </span>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-900">{currentUser.name || 'User'}</p>
+                <p className="text-xs text-gray-500">{currentUser.email || 'user@example.com'}</p>
+                {currentUser.role && (
+                  <p className="text-xs text-blue-600 font-medium">{currentUser.role}</p>
+                )}
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-colors"
+              onClick={handleLogout}
+            >
+              Sign out
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

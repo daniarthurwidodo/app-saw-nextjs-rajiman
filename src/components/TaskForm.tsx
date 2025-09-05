@@ -141,7 +141,7 @@ export default function TaskForm({ open, onClose, task, onSuccess }: TaskFormPro
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-white/98 backdrop-blur-md border shadow-xl">
         <DialogHeader>
           <DialogTitle>
             {task ? 'Edit Task' : 'Create New Task'}

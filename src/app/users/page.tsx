@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserRole } from "@/types";
 import { Spinner } from "@/components/ui/spinner";
+import EditUserModal from "@/components/EditUserModal";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
 
 interface User {
   user_id: number;
@@ -41,6 +44,8 @@ export default function UsersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // New user form state
   const [newUser, setNewUser] = useState({
@@ -131,6 +136,21 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditUser = (user: User) => {
+    setEditingUser(user);
+    setShowEditModal(true);
+  };
+
+  const handleEditSuccess = () => {
+    fetchUsers(currentPage);
+    toast.success('User updated successfully');
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingUser(null);
   };
 
   const getRoleBadgeColor = (role: UserRole) => {
@@ -244,6 +264,7 @@ export default function UsersPage() {
                   <th className="text-left p-2 font-medium">School</th>
                   <th className="text-left p-2 font-medium">Status</th>
                   <th className="text-left p-2 font-medium">Created</th>
+                  <th className="text-left p-2 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -270,6 +291,15 @@ export default function UsersPage() {
                     </td>
                     <td className="p-2">
                       {new Date(user.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="p-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditUser(user)}
+                      >
+                        Edit
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -374,6 +404,16 @@ export default function UsersPage() {
           </Card>
         </div>
       )}
+
+      {/* Edit User Modal */}
+      <EditUserModal
+        open={showEditModal}
+        onClose={handleCloseEditModal}
+        user={editingUser}
+        onSuccess={handleEditSuccess}
+      />
+
+      <Toaster position="top-right" />
     </div>
   );
 }
