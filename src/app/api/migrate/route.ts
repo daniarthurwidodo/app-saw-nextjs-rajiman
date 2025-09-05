@@ -65,6 +65,10 @@ export async function POST() {
         email: 'admin@claudecode.com',
         password: 'password123',
         role: 'super_admin'
+      },
+      nextSteps: {
+        seedUsers: 'Run POST /api/seed-users to create dummy users for all roles',
+        rollback: 'Run POST /api/rollback with {"target": "all"} to reset data'
       }
     });
 
