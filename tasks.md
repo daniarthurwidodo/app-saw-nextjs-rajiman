@@ -21,7 +21,6 @@
 
 ## 🔄 In Progress
 - [ ] Add task management module
-- [ ] Create schools management module  
 - [ ] Implement decision support system
 
 ## 📋 Pending - Core Features

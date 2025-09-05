@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 interface DashboardStats {
   totalUsers: number;
   activeUsers: number;
-  totalSchools: number;
   activeTasks: number;
   completedTasks: number;
 }
@@ -16,7 +15,6 @@ export default function Dashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     activeUsers: 0,
-    totalSchools: 0,
     activeTasks: 0,
     completedTasks: 0
   });
@@ -47,33 +45,7 @@ export default function Dashboard() {
         <Button>New Task</Button>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Schools</CardTitle>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              className="h-4 w-4 text-muted-foreground"
-            >
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9,22 9,12 15,12 15,22" />
-            </svg>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {loading ? '...' : stats.totalSchools}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Total registered schools
-            </p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
