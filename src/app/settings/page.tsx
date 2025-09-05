@@ -54,10 +54,23 @@ interface SecuritySettings {
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
-  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dbOperationInProgress, setDbOperationInProgress] = useState(false);
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        // Mock API call - in real app, this would load from database
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load settings");
+        setLoading(false);
+      }
+    };
+    loadSettings();
+  }, []);
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
     system_name: "Claude Code - School Management System",
@@ -84,6 +97,11 @@ export default function SettingsPage() {
   });
 
   const handleSaveSystemSettings = async () => {
+    if (!systemSettings.system_name) {
+      toast.error("System name is required");
+      return;
+    }
+
     setSaving(true);
     try {
       // Mock API call - in real app, this would save to database
@@ -218,6 +236,9 @@ export default function SettingsPage() {
     { id: "database", label: "Database", icon: Database },
   ];
 
+  // Get settings state from hook
+  const { settings, loading, error, updateSettings } = useSettings();
+
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
@@ -225,6 +246,18 @@ export default function SettingsPage() {
         <h1 className="text-3xl font-bold">System Settings</h1>
         <p className="text-gray-600 mt-1">Configure system preferences and security settings</p>
       </div>
+
+      {loading && (
+        <div className="flex justify-center">
+          <Spinner data-testid="loading-spinner" />
+        </div>
+      )}
+
+      {error && (
+        <div className="text-red-500" role="alert">
+          {error}
+        </div>
+      )}
 
       {/* Settings Navigation */}
       <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
@@ -298,7 +331,28 @@ export default function SettingsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label>Theme</Label>
+                  <Select
+                    aria-label="Theme"
+                    value={systemSettings.theme}
+                    onValueChange={(value) => setSystemSettings(prev => ({
+                      ...prev,
+                      theme: value
+                    }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light">Light</SelectItem>
+                      <SelectItem value="dark">Dark</SelectItem>
+                      <SelectItem value="system">System</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label>Timezone</Label>
                   <Select 
@@ -485,11 +539,19 @@ export default function SettingsPage() {
                     type="number"
                     min="4"
                     max="50"
+                    aria-label="Minimum Password Length"
                     value={securitySettings.password_min_length}
-                    onChange={(e) => setSecuritySettings(prev => ({
-                      ...prev,
-                      password_min_length: parseInt(e.target.value)
-                    }))}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (value < 4) {
+                        toast.error("Password must be at least 4 characters");
+                        return;
+                      }
+                      setSecuritySettings(prev => ({
+                        ...prev,
+                        password_min_length: value
+                      }));
+                    }}
                   />
                 </div>
 

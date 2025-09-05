@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 interface SpinnerProps {
   className?: string;
   size?: "sm" | "md" | "lg";
+  "data-testid"?: string;
 }
 
 const sizeClasses = {
@@ -12,12 +13,16 @@ const sizeClasses = {
   lg: "h-8 w-8"
 };
 
-export function Spinner({ className, size = "md" }: SpinnerProps) {
+export function Spinner({ className, size = "md", "data-testid": testId }: SpinnerProps) {
   return (
     <Loader2 
-      className={cn(
-        "animate-spin",
-        sizeClasses[size],
+      data-testid={testId}
+      className={cn("animate-spin", sizeClasses[size], className)}
+    />
+  );
+        className
+      )}
+      {...props}
         className
       )} 
     />

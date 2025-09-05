@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSettings } from "@/hooks/useSettings";
+import { useAppTitle } from "@/hooks/useAppTitle";
 import { useState, useEffect } from "react";
 
 const navigation = [
@@ -70,8 +71,12 @@ const navigation = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { getSetting } = useSettings();
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<{
+    name?: string;
+    email?: string;
+    role?: string;
+  } | null>(null);
+  const appTitle = useAppTitle();
 
   useEffect(() => {
     // Mock user data if not authenticated - in real app this would redirect to login
@@ -87,8 +92,6 @@ export default function Sidebar() {
     }
   }, [user]);
 
-  const appName = getSetting('app_name', 'Claude Code');
-
   const handleLogout = () => {
     if (user) {
       logout();
@@ -102,7 +105,7 @@ export default function Sidebar() {
     <div className="flex flex-col w-64 bg-white border-r border-gray-200 min-h-screen">
       <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200">
         <h1 className="text-lg font-bold text-gray-800 text-center leading-tight">
-          {appName}
+          {appTitle}
         </h1>
       </div>
       

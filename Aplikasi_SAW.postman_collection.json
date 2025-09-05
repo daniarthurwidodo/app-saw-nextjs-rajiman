@@ -2,7 +2,7 @@
   "info": {
     "name": "Aplikasi SAW - School Management System API",
     "description": "Complete API collection for Aplikasi SAW school management system. Includes authentication, migrations, and system endpoints.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -30,7 +30,7 @@
           "response": []
         },
         {
-          "name": "Initialize Database Tables",
+          "name": "Initialize Database",
           "request": {
             "method": "POST",
             "header": [
@@ -97,6 +97,322 @@
               "raw": "{{baseUrl}}/api/seed-users",
               "host": ["{{baseUrl}}"],
               "path": ["api", "seed-users"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "⚙️ Settings",
+      "item": [
+        {
+          "name": "Get All Settings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Multiple Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"system_name\": \"School Management System\",\n  \"theme\": \"light\",\n  \"language\": \"en\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Setting by Key",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/:key",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings", ":key"],
+              "variable": [
+                {
+                  "key": "key",
+                  "value": "system_name"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Setting by Key",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"New System Name\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/:key",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings", ":key"],
+              "variable": [
+                {
+                  "key": "key",
+                  "value": "system_name"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👤 Profile",
+      "item": [
+        {
+          "name": "Get Current Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Current Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👥 Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "123"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Users by Role",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/by-role?role=teacher",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "by-role"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "teacher"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Users by School",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/by-school?schoolId=123",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "by-school"],
+              "query": [
+                {
+                  "key": "schoolId",
+                  "value": "123"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📋 Tasks & Subtasks",
+      "item": [
+        {
+          "name": "Get All Tasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Task by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "123"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Tasks for Kanban",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tasks/kanban",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tasks", "kanban"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Subtasks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subtask by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "123"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subtasks Progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "progress"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subtasks by Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/by-status?status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "by-status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
             }
           },
           "response": []
