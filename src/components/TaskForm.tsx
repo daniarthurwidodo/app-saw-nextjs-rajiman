@@ -210,7 +210,7 @@ export default function TaskForm({ open, onClose, task, onSuccess }: TaskFormPro
                 <SelectValue placeholder="Select user to assign" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Unassigned</SelectItem>
+                <SelectItem value="0">Unassigned</SelectItem>
                 {users.map((user) => (
                   <SelectItem key={user.user_id} value={user.user_id.toString()}>
                     {user.name} ({user.email})

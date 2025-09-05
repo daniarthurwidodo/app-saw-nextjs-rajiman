@@ -410,6 +410,92 @@ export async function POST() {
       errors.push(`Failed to create user profiles: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 
+    // Create sample subtasks
+    try {
+      const tasks = await query(
+        'SELECT task_id, title FROM tasks ORDER BY task_id ASC'
+      ) as any[];
+
+      if (tasks.length > 0) {
+        const sampleSubtasks = [
+          {
+            relation_task_id: tasks[0].task_id,
+            subtasks: [
+              {
+                subtask_title: 'Create registration form template',
+                subtask_description: 'Design and create the basic form template',
+                subtask_status: 'done',
+                subtask_date: '2024-01-10'
+              },
+              {
+                subtask_title: 'Add validation rules',
+                subtask_description: 'Implement form validation and error handling',
+                subtask_status: 'done',
+                subtask_date: '2024-01-15'
+              },
+              {
+                subtask_title: 'Test registration process',
+                subtask_description: 'Perform end-to-end testing of registration flow',
+                subtask_status: 'in_progress',
+                subtask_date: '2024-01-20'
+              }
+            ]
+          },
+          {
+            relation_task_id: tasks[1].task_id,
+            subtasks: [
+              {
+                subtask_title: 'Export current student data',
+                subtask_description: 'Create backup of existing student records',
+                subtask_status: 'done',
+                subtask_date: '2024-01-12'
+              },
+              {
+                subtask_title: 'Update student information',
+                subtask_description: 'Modify records with current academic year data',
+                subtask_status: 'in_progress',
+                subtask_date: '2024-01-18'
+              },
+              {
+                subtask_title: 'Verify data integrity',
+                subtask_description: 'Check updated records for accuracy',
+                subtask_status: 'todo',
+                subtask_date: '2024-01-25'
+              }
+            ]
+          }
+        ];
+
+        const staffUsers = await query(
+          'SELECT user_id FROM users WHERE role = ? ORDER BY user_id ASC',
+          [UserRole.USER]
+        ) as any[];
+
+        for (const taskSubtasks of sampleSubtasks) {
+          for (const subtask of taskSubtasks.subtasks) {
+            const randomStaff = staffUsers[Math.floor(Math.random() * staffUsers.length)];
+            
+            await query(
+              `INSERT INTO subtasks (relation_task_id, subtask_title, subtask_description, assigned_to, subtask_status, subtask_date, created_at, updated_at) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+              [
+                taskSubtasks.relation_task_id,
+                subtask.subtask_title,
+                subtask.subtask_description,
+                randomStaff?.user_id || null,
+                subtask.subtask_status,
+                subtask.subtask_date,
+                currentTime,
+                currentTime
+              ]
+            );
+          }
+        }
+      }
+    } catch (error) {
+      errors.push(`Failed to create sample subtasks: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Dummy users migration completed',

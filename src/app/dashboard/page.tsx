@@ -171,51 +171,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>School Performance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">SDN 01 Jakarta</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 bg-muted rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full w-[85%]"></div>
-                  </div>
-                  <span className="text-sm">85%</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">SMP 05 Bandung</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 bg-muted rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full w-[72%]"></div>
-                  </div>
-                  <span className="text-sm">72%</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">SMA 03 Surabaya</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 bg-muted rounded-full h-2">
-                    <div className="bg-yellow-500 h-2 rounded-full w-[68%]"></div>
-                  </div>
-                  <span className="text-sm">68%</span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">SDN 12 Medan</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-24 bg-muted rounded-full h-2">
-                    <div className="bg-red-500 h-2 rounded-full w-[45%]"></div>
-                  </div>
-                  <span className="text-sm">45%</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

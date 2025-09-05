@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Task, TaskStatus } from "@/types";
 import { TasksByStatusResponse } from "@/modules/tasks/types";
 import KanbanColumn from "./KanbanColumn";
+import TaskDetailModal from "./TaskDetailModal";
 import { Button } from "./ui/button";
 import { Plus, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -12,9 +13,10 @@ import { Spinner } from "./ui/spinner";
 interface KanbanBoardProps {
   onCreateTask?: () => void;
   onEditTask?: (task: Task) => void;
+  onAddSubtask?: (task: Task) => void;
 }
 
-export default function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardProps) {
+export default function KanbanBoard({ onCreateTask, onEditTask, onAddSubtask }: KanbanBoardProps) {
   const [tasks, setTasks] = useState<{
     todo: Task[];
     in_progress: Task[];
@@ -26,6 +28,8 @@ export default function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardPro
   });
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [showTaskDetail, setShowTaskDetail] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -105,6 +109,16 @@ export default function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardPro
     }
   };
 
+  const handleViewTaskDetails = (task: Task) => {
+    setSelectedTask(task);
+    setShowTaskDetail(true);
+  };
+
+  const handleCloseTaskDetail = () => {
+    setShowTaskDetail(false);
+    setSelectedTask(null);
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-96 space-y-4">
@@ -155,6 +169,8 @@ export default function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardPro
           onTaskDelete={handleTaskDelete}
           onTaskStatusChange={handleTaskStatusChange}
           onTaskDrop={handleTaskDrop}
+          onTaskViewDetails={handleViewTaskDetails}
+          onTaskAddSubtask={onAddSubtask}
         />
         
         <KanbanColumn
@@ -165,6 +181,8 @@ export default function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardPro
           onTaskDelete={handleTaskDelete}
           onTaskStatusChange={handleTaskStatusChange}
           onTaskDrop={handleTaskDrop}
+          onTaskViewDetails={handleViewTaskDetails}
+          onTaskAddSubtask={onAddSubtask}
         />
         
         <KanbanColumn
@@ -175,8 +193,17 @@ export default function KanbanBoard({ onCreateTask, onEditTask }: KanbanBoardPro
           onTaskDelete={handleTaskDelete}
           onTaskStatusChange={handleTaskStatusChange}
           onTaskDrop={handleTaskDrop}
+          onTaskViewDetails={handleViewTaskDetails}
+          onTaskAddSubtask={onAddSubtask}
         />
       </div>
+
+      {/* Task Detail Modal */}
+      <TaskDetailModal
+        open={showTaskDetail}
+        onClose={handleCloseTaskDetail}
+        task={selectedTask}
+      />
     </div>
   );
 }

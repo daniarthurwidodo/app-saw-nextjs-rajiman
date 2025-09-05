@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Task, TaskPriority } from "@/types";
-import { Calendar, User, MoreHorizontal } from "lucide-react";
+import { Calendar, User, MoreHorizontal, Plus } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,9 +18,11 @@ interface TaskCardProps {
   onDelete?: (taskId: number) => void;
   onStatusChange?: (taskId: number, newStatus: string) => void;
   onDragStart?: (task: Task) => void;
+  onViewDetails?: (task: Task) => void;
+  onAddSubtask?: (task: Task) => void;
 }
 
-export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onDragStart }: TaskCardProps) {
+export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onDragStart, onViewDetails, onAddSubtask }: TaskCardProps) {
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
       case TaskPriority.HIGH:
@@ -68,6 +70,17 @@ export default function TaskCard({ task, onEdit, onDelete, onStatusChange, onDra
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {onViewDetails && (
+                <DropdownMenuItem onClick={() => onViewDetails(task)}>
+                  View Details
+                </DropdownMenuItem>
+              )}
+              {onAddSubtask && (
+                <DropdownMenuItem onClick={() => onAddSubtask(task)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Subtask
+                </DropdownMenuItem>
+              )}
               {onEdit && (
                 <DropdownMenuItem onClick={() => onEdit(task)}>
                   Edit Task

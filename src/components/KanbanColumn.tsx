@@ -13,6 +13,8 @@ interface KanbanColumnProps {
   onTaskDelete?: (taskId: number) => void;
   onTaskStatusChange?: (taskId: number, newStatus: string) => void;
   onTaskDrop?: (taskId: number, newStatus: TaskStatus) => void;
+  onTaskViewDetails?: (task: Task) => void;
+  onTaskAddSubtask?: (task: Task) => void;
 }
 
 export default function KanbanColumn({ 
@@ -22,7 +24,9 @@ export default function KanbanColumn({
   onTaskEdit, 
   onTaskDelete, 
   onTaskStatusChange,
-  onTaskDrop 
+  onTaskDrop,
+  onTaskViewDetails,
+  onTaskAddSubtask
 }: KanbanColumnProps) {
   const getColumnColor = (status: TaskStatus) => {
     switch (status) {
@@ -95,6 +99,8 @@ export default function KanbanColumn({
                   onEdit={onTaskEdit}
                   onDelete={onTaskDelete}
                   onStatusChange={onTaskStatusChange}
+                  onViewDetails={onTaskViewDetails}
+                  onAddSubtask={onTaskAddSubtask}
                 />
               ))
             )}
