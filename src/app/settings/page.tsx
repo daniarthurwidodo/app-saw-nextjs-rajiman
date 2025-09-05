@@ -56,6 +56,8 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [dbOperationInProgress, setDbOperationInProgress] = useState(false);
+  const [showResetConfirmation, setShowResetConfirmation] = useState(false);
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
     system_name: "Claude Code - School Management System",
@@ -115,6 +117,97 @@ export default function SettingsPage() {
       toast.error("Failed to save security settings");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleInitializeDatabase = async () => {
+    setDbOperationInProgress(true);
+    try {
+      const response = await fetch('/api/init-db', { method: 'POST' });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success("Database initialized successfully");
+      } else {
+        toast.error(result.message || "Failed to initialize database");
+      }
+    } catch (error) {
+      toast.error("Failed to initialize database");
+    } finally {
+      setDbOperationInProgress(false);
+    }
+  };
+
+  const handleSeedDatabase = async () => {
+    setDbOperationInProgress(true);
+    try {
+      const response = await fetch('/api/seed-users', { method: 'POST' });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success("Database seeded successfully");
+      } else {
+        toast.error(result.message || "Failed to seed database");
+      }
+    } catch (error) {
+      toast.error("Failed to seed database");
+    } finally {
+      setDbOperationInProgress(false);
+    }
+  };
+
+  const handleResetDatabase = async () => {
+    setDbOperationInProgress(true);
+    setShowResetConfirmation(false);
+    try {
+      const response = await fetch('/api/reset-db', { method: 'POST' });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success("Database reset successfully");
+      } else {
+        toast.error(result.message || "Failed to reset database");
+      }
+    } catch (error) {
+      toast.error("Failed to reset database");
+    } finally {
+      setDbOperationInProgress(false);
+    }
+  };
+
+  const handleMigrateDatabase = async () => {
+    setDbOperationInProgress(true);
+    try {
+      const response = await fetch('/api/migrate', { method: 'POST' });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success("Database migration completed successfully");
+      } else {
+        toast.error(result.message || "Failed to migrate database");
+      }
+    } catch (error) {
+      toast.error("Failed to migrate database");
+    } finally {
+      setDbOperationInProgress(false);
+    }
+  };
+
+  const handleTestDbConnection = async () => {
+    setDbOperationInProgress(true);
+    try {
+      const response = await fetch('/api/test-db', { method: 'GET' });
+      const result = await response.json();
+      
+      if (result.success) {
+        toast.success("Database connection successful");
+      } else {
+        toast.error(result.message || "Database connection failed");
+      }
+    } catch (error) {
+      toast.error("Failed to test database connection");
+    } finally {
+      setDbOperationInProgress(false);
     }
   };
 
@@ -462,6 +555,24 @@ export default function SettingsPage() {
       {/* Database Settings */}
       {activeTab === "database" && (
         <div className="space-y-6">
+          {/* Warning Banner */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <Shield className="h-5 w-5 text-yellow-400" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Database operations are sensitive
+                </h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>Please be careful when performing database operations. Some actions are irreversible and will delete ALL data.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Database Operations */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -470,66 +581,197 @@ export default function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <Shield className="h-5 w-5 text-yellow-400" />
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-yellow-800">
-                      Database operations are sensitive
-                    </h3>
-                    <div className="mt-2 text-sm text-yellow-700">
-                      <p>Please be careful when performing database operations. Always backup your data first.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Initialize Database */}
+                <Card className="border-2 border-green-200 bg-green-50">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium mb-2 text-green-800">Initialize Database</h4>
+                    <p className="text-sm text-green-700 mb-4">Create database tables and schema</p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-green-300 hover:bg-green-100"
+                      onClick={handleInitializeDatabase}
+                      disabled={dbOperationInProgress}
+                    >
+                      {dbOperationInProgress && <Spinner size="sm" className="mr-2" />}
+                      Initialize Tables
+                    </Button>
+                  </CardContent>
+                </Card>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card>
+                {/* Migrate Database */}
+                <Card className="border-2 border-blue-200 bg-blue-50">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium mb-2 text-blue-800">Migrate Database</h4>
+                    <p className="text-sm text-blue-700 mb-4">Add admin user and initial data</p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-blue-300 hover:bg-blue-100"
+                      onClick={handleMigrateDatabase}
+                      disabled={dbOperationInProgress}
+                    >
+                      {dbOperationInProgress && <Spinner size="sm" className="mr-2" />}
+                      Run Migration
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Seed Database */}
+                <Card className="border-2 border-purple-200 bg-purple-50">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium mb-2 text-purple-800">Seed Database</h4>
+                    <p className="text-sm text-purple-700 mb-4">Add test users, tasks, and documents</p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-purple-300 hover:bg-purple-100"
+                      onClick={handleSeedDatabase}
+                      disabled={dbOperationInProgress}
+                    >
+                      {dbOperationInProgress && <Spinner size="sm" className="mr-2" />}
+                      Seed Data
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Test Connection */}
+                <Card className="border-2 border-gray-200">
+                  <CardContent className="p-4">
+                    <h4 className="font-medium mb-2">Test Connection</h4>
+                    <p className="text-sm text-gray-600 mb-4">Check database connectivity and status</p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleTestDbConnection}
+                      disabled={dbOperationInProgress}
+                    >
+                      {dbOperationInProgress && <Spinner size="sm" className="mr-2" />}
+                      Test Connection
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* Backup Database */}
+                <Card className="border-2 border-gray-200">
                   <CardContent className="p-4">
                     <h4 className="font-medium mb-2">Backup Database</h4>
                     <p className="text-sm text-gray-600 mb-4">Create a backup of the current database</p>
-                    <Button variant="outline" className="w-full">
-                      Create Backup
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      disabled={true}
+                    >
+                      Coming Soon
                     </Button>
                   </CardContent>
                 </Card>
 
-                <Card>
+                {/* Reset Database */}
+                <Card className="border-2 border-red-200 bg-red-50">
                   <CardContent className="p-4">
-                    <h4 className="font-medium mb-2">Restore Database</h4>
-                    <p className="text-sm text-gray-600 mb-4">Restore database from a backup file</p>
-                    <Button variant="outline" className="w-full">
-                      Restore Backup
+                    <h4 className="font-medium mb-2 text-red-800">Reset Database</h4>
+                    <p className="text-sm text-red-700 mb-4">⚠️ Delete ALL data and tables</p>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full"
+                      onClick={() => setShowResetConfirmation(true)}
+                      disabled={dbOperationInProgress}
+                    >
+                      Reset Database
                     </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <h4 className="font-medium mb-2">Clear Cache</h4>
-                    <p className="text-sm text-gray-600 mb-4">Clear application cache and temporary files</p>
-                    <Button variant="outline" className="w-full">
-                      Clear Cache
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-4">
-                    <h4 className="font-medium mb-2">Database Status</h4>
-                    <p className="text-sm text-gray-600 mb-4">Check database connection and health</p>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm text-green-600">Connected</span>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Database Setup Workflow */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Setup Workflow</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <p className="text-sm text-gray-600 mb-4">
+                      For a fresh installation, follow these steps in order:
+                    </p>
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-blue-600">1</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Initialize Database</p>
+                          <p className="text-xs text-gray-500">Creates all necessary tables and schema</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-blue-600">2</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Migrate Database</p>
+                          <p className="text-xs text-gray-500">Adds admin user, schools, and system settings</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-blue-600">3</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">Seed Database (Optional)</p>
+                          <p className="text-xs text-gray-500">Adds test users, tasks, and sample data for development</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </CardContent>
           </Card>
+
+          {/* Reset Confirmation Dialog */}
+          {showResetConfirmation && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <Card className="w-full max-w-md mx-4">
+                <CardHeader>
+                  <CardTitle className="text-red-600">⚠️ Confirm Database Reset</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600">
+                    This action will permanently delete ALL data including:
+                  </p>
+                  <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                    <li>All user accounts</li>
+                    <li>All tasks and projects</li>
+                    <li>All documents and files</li>
+                    <li>All system settings</li>
+                    <li>All database tables</li>
+                  </ul>
+                  <div className="bg-red-50 border border-red-200 rounded p-3">
+                    <p className="text-sm text-red-700 font-medium">
+                      This action cannot be undone!
+                    </p>
+                  </div>
+                  <div className="flex space-x-3">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => setShowResetConfirmation(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      className="flex-1"
+                      onClick={handleResetDatabase}
+                      disabled={dbOperationInProgress}
+                    >
+                      {dbOperationInProgress && <Spinner size="sm" className="mr-2" />}
+                      Yes, Reset Database
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       )}
 

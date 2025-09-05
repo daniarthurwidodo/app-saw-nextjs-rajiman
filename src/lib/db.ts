@@ -95,4 +95,56 @@ export async function query(sql: string, params?: any[]) {
   }
 }
 
+// Graceful shutdown handling
+let isShuttingDown = false;
+
+export async function closePool() {
+  if (isShuttingDown) return;
+  
+  isShuttingDown = true;
+  console.log('🔄 Closing database connection pool...');
+  
+  try {
+    await pool.end();
+    console.log('✅ Database connection pool closed successfully');
+  } catch (error) {
+    console.error('❌ Error closing database pool:', error);
+  }
+}
+
+// Handle process termination signals
+if (typeof process !== 'undefined') {
+  process.on('SIGINT', async () => {
+    console.log('\n🛑 Received SIGINT (Ctrl+C), shutting down gracefully...');
+    await closePool();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', async () => {
+    console.log('\n🛑 Received SIGTERM, shutting down gracefully...');
+    await closePool();
+    process.exit(0);
+  });
+
+  process.on('uncaughtException', async (error) => {
+    console.error('💥 Uncaught Exception:', error);
+    await closePool();
+    process.exit(1);
+  });
+
+  process.on('unhandledRejection', async (reason, promise) => {
+    console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+    await closePool();
+    process.exit(1);
+  });
+
+  // Gracefully close connections when the process is about to exit
+  process.on('beforeExit', async (code) => {
+    if (!isShuttingDown) {
+      console.log('🔄 Process beforeExit, closing database connections...');
+      await closePool();
+    }
+  });
+}
+
 export default pool;

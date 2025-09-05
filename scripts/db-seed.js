@@ -37,29 +37,148 @@ const sampleTasks = [
   {
     title: 'Setup New School Registration System',
     description: 'Implement and configure the new school registration system for incoming students',
-    priority: 'high'
+    priority: 'high',
+    status: 'todo',
+    due_date: new Date('2024-12-31')
   },
   {
     title: 'Update Student Database',
     description: 'Update all student records with current academic year information',
-    priority: 'medium'
+    priority: 'medium',
+    status: 'in_progress',
+    due_date: new Date('2024-11-30')
   },
   {
     title: 'Generate Monthly Performance Report',
     description: 'Create comprehensive monthly performance report for all schools',
-    priority: 'medium'
+    priority: 'medium',
+    status: 'done',
+    due_date: new Date('2024-10-15')
   },
   {
     title: 'Conduct Teacher Training Workshop',
     description: 'Organize and conduct professional development workshop for teachers',
-    priority: 'high'
+    priority: 'high',
+    status: 'todo',
+    due_date: new Date('2024-11-15')
   },
   {
     title: 'Review Infrastructure Maintenance',
     description: 'Assess and plan infrastructure maintenance for all school facilities',
-    priority: 'low'
+    priority: 'low',
+    status: 'in_progress',
+    due_date: new Date('2024-12-01')
+  },
+  {
+    title: 'Digital Library System Implementation',
+    description: 'Setup and configure new digital library management system',
+    priority: 'medium',
+    status: 'todo',
+    due_date: new Date('2024-11-20')
+  },
+  {
+    title: 'Annual Budget Review',
+    description: 'Review and prepare annual budget for next academic year',
+    priority: 'high',
+    status: 'todo',
+    due_date: new Date('2024-12-15')
+  },
+  {
+    title: 'Security System Audit',
+    description: 'Conduct comprehensive security audit of all school premises',
+    priority: 'high',
+    status: 'in_progress',
+    due_date: new Date('2024-11-10')
   }
 ];
+
+const sampleDocuments = [
+  {
+    title: 'Student Registration Form 2024',
+    description: 'Official form for new student registration process',
+    file_name: 'registration_form_2024.pdf',
+    file_type: 'PDF',
+    file_size: 2.5,
+    file_path: '/uploads/forms/registration_form_2024.pdf',
+    category: 'Forms',
+    status: 'active'
+  },
+  {
+    title: 'Academic Calendar 2024',
+    description: 'Complete academic calendar for the year 2024',
+    file_name: 'academic_calendar_2024.pdf',
+    file_type: 'PDF',
+    file_size: 1.8,
+    file_path: '/uploads/calendar/academic_calendar_2024.pdf',
+    category: 'Calendar',
+    status: 'active'
+  },
+  {
+    title: 'Teacher Handbook',
+    description: 'Guidelines and policies for teaching staff',
+    file_name: 'teacher_handbook_2024.docx',
+    file_type: 'DOCX',
+    file_size: 3.2,
+    file_path: '/uploads/handbooks/teacher_handbook_2024.docx',
+    category: 'Policies',
+    status: 'active'
+  },
+  {
+    title: 'Emergency Procedures Manual',
+    description: 'Complete guide for emergency response procedures',
+    file_name: 'emergency_procedures_2024.pdf',
+    file_type: 'PDF',
+    file_size: 4.1,
+    file_path: '/uploads/manuals/emergency_procedures_2024.pdf',
+    category: 'Safety',
+    status: 'active'
+  },
+  {
+    title: 'Budget Template 2024',
+    description: 'Standard template for budget planning',
+    file_name: 'budget_template_2024.xlsx',
+    file_type: 'XLSX',
+    file_size: 0.8,
+    file_path: '/uploads/templates/budget_template_2024.xlsx',
+    category: 'Templates',
+    status: 'draft'
+  }
+];
+
+const defaultSettings = [
+  { setting_key: 'app_name', setting_value: 'Claude Code School Management', description: 'Application name displayed in the interface' },
+  { setting_key: 'app_version', setting_value: '1.0.0', description: 'Current application version' },
+  { setting_key: 'maintenance_mode', setting_value: 'false', description: 'Enable/disable maintenance mode' },
+  { setting_key: 'max_file_upload_size', setting_value: '10485760', description: 'Maximum file upload size in bytes (10MB)' },
+  { setting_key: 'session_timeout', setting_value: '3600', description: 'User session timeout in seconds' },
+  { setting_key: 'email_notifications', setting_value: 'true', description: 'Enable/disable email notifications' },
+  { setting_key: 'backup_retention_days', setting_value: '30', description: 'Number of days to retain backups' },
+  { setting_key: 'default_theme', setting_value: 'light', description: 'Default application theme' }
+];
+
+let connection = null;
+
+// Graceful shutdown handling
+function gracefulShutdown(signal) {
+  console.log(`\n🛑 Received ${signal}, shutting down gracefully...`);
+  if (connection) {
+    connection.end()
+      .then(() => {
+        console.log('✅ Database connection closed');
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error('❌ Error closing database connection:', error);
+        process.exit(1);
+      });
+  } else {
+    process.exit(0);
+  }
+}
+
+// Handle termination signals
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
 async function seedDatabase() {
   const config = {
@@ -74,7 +193,7 @@ async function seedDatabase() {
   console.log(`📍 Database: ${config.database}`);
 
   try {
-    const connection = await mysql.createConnection(config);
+    connection = await mysql.createConnection(config);
     console.log('✅ Connected to database');
 
     let createdUsers = 0;
@@ -143,19 +262,90 @@ async function seedDatabase() {
       const randomPrincipal = principalUsers[Math.floor(Math.random() * principalUsers.length)];
       
       await connection.execute(
-        'INSERT INTO tasks (title, description, assigned_to, created_by, priority, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        'INSERT INTO tasks (title, description, assigned_to, created_by, priority, status, due_date, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
           task.title,
           task.description,
           staffUsers[i].user_id,
           randomPrincipal.user_id,
           task.priority,
+          task.status,
+          task.due_date,
           new Date(),
           new Date()
         ]
       );
 
       console.log(`✅ Created task: ${task.title}`);
+    }
+
+    // Create sample documents
+    const [adminUsers] = await connection.execute(
+      'SELECT user_id FROM users WHERE role = ? LIMIT 1',
+      ['super_admin']
+    );
+
+    if (adminUsers.length > 0) {
+      for (const doc of sampleDocuments) {
+        await connection.execute(
+          'INSERT INTO documents (title, description, file_name, file_type, file_size, file_path, category, status, uploaded_by, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [
+            doc.title,
+            doc.description,
+            doc.file_name,
+            doc.file_type,
+            doc.file_size,
+            doc.file_path,
+            doc.category,
+            doc.status,
+            adminUsers[0].user_id,
+            new Date(),
+            new Date()
+          ]
+        );
+
+        console.log(`✅ Created document: ${doc.title}`);
+      }
+    }
+
+    // Create system settings
+    for (const setting of defaultSettings) {
+      await connection.execute(
+        'INSERT IGNORE INTO settings (setting_key, setting_value, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+        [
+          setting.setting_key,
+          setting.setting_value,
+          setting.description,
+          new Date(),
+          new Date()
+        ]
+      );
+
+      console.log(`✅ Created setting: ${setting.setting_key}`);
+    }
+
+    // Create user profiles
+    const [allUsers] = await connection.execute(
+      'SELECT user_id, name, email FROM users ORDER BY user_id ASC'
+    );
+
+    for (const user of allUsers) {
+      await connection.execute(
+        'INSERT IGNORE INTO profiles (user_id, first_name, last_name, phone, address, bio, avatar, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          user.user_id,
+          user.name.split(' ')[0] || user.name,
+          user.name.split(' ').slice(1).join(' ') || '',
+          `+62-${Math.floor(Math.random() * 900000000) + 100000000}`,
+          `Jl. Sample Street No. ${Math.floor(Math.random() * 100) + 1}, Jakarta`,
+          'Professional educator with extensive experience in the field.',
+          null,
+          new Date(),
+          new Date()
+        ]
+      );
+
+      console.log(`✅ Created profile: ${user.name}`);
     }
 
     await connection.end();

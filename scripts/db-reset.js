@@ -7,6 +7,30 @@ const path = require('path');
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '../.env.local') });
 
+let connection = null;
+
+// Graceful shutdown handling
+function gracefulShutdown(signal) {
+  console.log(`\n🛑 Received ${signal}, shutting down gracefully...`);
+  if (connection) {
+    connection.end()
+      .then(() => {
+        console.log('✅ Database connection closed');
+        process.exit(0);
+      })
+      .catch((error) => {
+        console.error('❌ Error closing database connection:', error);
+        process.exit(1);
+      });
+  } else {
+    process.exit(0);
+  }
+}
+
+// Handle termination signals
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+
 async function resetDatabase() {
   const config = {
     host: process.env.DB_HOST,
@@ -21,7 +45,7 @@ async function resetDatabase() {
   console.log('⚠️  This will delete all data!');
 
   try {
-    const connection = await mysql.createConnection(config);
+    connection = await mysql.createConnection(config);
     console.log('✅ Connected to database');
 
     // Disable foreign key checks
