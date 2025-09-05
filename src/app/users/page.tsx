@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserRole } from "@/types";
+import { Spinner } from "@/components/ui/spinner";
 
 interface User {
   user_id: number;
@@ -166,9 +167,9 @@ export default function UsersPage() {
     return (
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-64">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p>Loading users...</p>
+          <div className="text-center space-y-4">
+            <Spinner size="lg" className="mx-auto" />
+            <p className="text-gray-500">Loading users...</p>
           </div>
         </div>
       </div>
@@ -357,6 +358,7 @@ export default function UsersPage() {
                 </div>
                 <div className="flex gap-2">
                   <Button type="submit" disabled={loading}>
+                    {loading && <Spinner size="sm" className="mr-2" />}
                     {loading ? "Creating..." : "Create User"}
                   </Button>
                   <Button

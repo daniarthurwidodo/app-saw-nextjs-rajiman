@@ -116,7 +116,7 @@ export class AuthService {
 
       // Hash password
       const hashedPassword = await bcrypt.hash(sanitizedData.password, this.SALT_ROUNDS);
-      const currentTime = new Date().toISOString();
+      const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       // Insert new user
       const result = await query(
@@ -219,7 +219,7 @@ export class AuthService {
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, this.SALT_ROUNDS);
-      const currentTime = new Date().toISOString();
+      const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       await query(
         'UPDATE users SET password = ?, updated_at = ? WHERE user_id = ? AND is_active = 1',
@@ -242,7 +242,7 @@ export class AuthService {
 
   static async deactivateUser(userId: number): Promise<void> {
     try {
-      const currentTime = new Date().toISOString();
+      const currentTime = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
       await query(
         'UPDATE users SET is_active = 0, updated_at = ? WHERE user_id = ?',

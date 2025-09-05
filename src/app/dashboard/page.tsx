@@ -3,6 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from 'react';
+import { Spinner } from "@/components/ui/spinner";
 
 interface DashboardStats {
   totalUsers: number;
@@ -66,8 +67,8 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {loading ? '...' : stats.activeTasks}
+            <div className="text-2xl font-bold flex items-center">
+              {loading ? <Spinner size="sm" /> : stats.activeTasks}
             </div>
             <p className="text-xs text-muted-foreground">
               Tasks in progress or todo
@@ -93,8 +94,8 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {loading ? '...' : stats.completedTasks}
+            <div className="text-2xl font-bold flex items-center">
+              {loading ? <Spinner size="sm" /> : stats.completedTasks}
             </div>
             <p className="text-xs text-muted-foreground">
               Tasks marked as done
@@ -121,11 +122,11 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {loading ? '...' : stats.activeUsers}
+            <div className="text-2xl font-bold flex items-center">
+              {loading ? <Spinner size="sm" /> : stats.activeUsers}
             </div>
             <p className="text-xs text-muted-foreground">
-              Total active users ({loading ? '...' : stats.totalUsers} total)
+              Total active users ({loading ? <Spinner size="sm" className="inline" /> : stats.totalUsers} total)
             </p>
           </CardContent>
         </Card>
