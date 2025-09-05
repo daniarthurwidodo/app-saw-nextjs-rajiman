@@ -2,6 +2,7 @@
   "name": "app-saw-nextjs-rajiman",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
@@ -15,7 +16,8 @@
     "db:setup": "npm run db:create && npm run db:init && npm run db:migrate && npm run db:seed",
     "db:profile": "node scripts/db-profile-migration.js",
     "db:settings": "node scripts/db-settings-migration.js",
-    "db:subtasks": "node scripts/db-subtask-migration.js"
+    "db:subtasks": "node scripts/db-subtask-migration.js",
+    "generate:erd": "node scripts/generate-erd.js --experimental-modules"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
