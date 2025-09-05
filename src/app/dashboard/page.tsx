@@ -1,7 +1,45 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from 'react';
+
+interface DashboardStats {
+  totalUsers: number;
+  activeUsers: number;
+  totalSchools: number;
+  activeTasks: number;
+  completedTasks: number;
+}
 
 export default function Dashboard() {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalUsers: 0,
+    activeUsers: 0,
+    totalSchools: 0,
+    activeTasks: 0,
+    completedTasks: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const response = await fetch('/api/dashboard/stats');
+        const data = await response.json();
+        
+        if (data.success) {
+          setStats(data.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch dashboard stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+  }, []);
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -28,9 +66,11 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">
+              {loading ? '...' : stats.totalSchools}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +2 from last month
+              Total registered schools
             </p>
           </CardContent>
         </Card>
@@ -54,9 +94,11 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">47</div>
+            <div className="text-2xl font-bold">
+              {loading ? '...' : stats.activeTasks}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +12% from last week
+              Tasks in progress or todo
             </p>
           </CardContent>
         </Card>
@@ -79,16 +121,18 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">234</div>
+            <div className="text-2xl font-bold">
+              {loading ? '...' : stats.completedTasks}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +19% from last month
+              Tasks marked as done
             </p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Users Online</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -105,9 +149,11 @@ export default function Dashboard() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">18</div>
+            <div className="text-2xl font-bold">
+              {loading ? '...' : stats.activeUsers}
+            </div>
             <p className="text-xs text-muted-foreground">
-              +5 from yesterday
+              Total active users ({loading ? '...' : stats.totalUsers} total)
             </p>
           </CardContent>
         </Card>
