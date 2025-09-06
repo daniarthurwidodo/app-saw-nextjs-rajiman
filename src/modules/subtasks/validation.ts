@@ -1,4 +1,5 @@
-import { CreateSubtaskRequest, UpdateSubtaskRequest, SubtaskStatus } from './types';
+import { CreateSubtaskRequest, UpdateSubtaskRequest } from './types';
+import { SubtaskStatus } from '@/types';
 
 export interface ValidationError {
   field: string;
@@ -154,10 +155,11 @@ export class SubtasksValidator {
 
     // Validate subtask_status (optional)
     if (data.subtask_status !== undefined) {
-      if (!Object.values(SubtaskStatus).includes(data.subtask_status)) {
+      const validStatuses = Object.values(SubtaskStatus);
+      if (!validStatuses.includes(data.subtask_status as SubtaskStatus)) {
         errors.push({
           field: 'subtask_status',
-          message: `Subtask status must be one of: ${Object.values(SubtaskStatus).join(', ')}`,
+          message: `Subtask status must be one of: ${validStatuses.join(', ')}`,
         });
       }
     }
@@ -237,7 +239,7 @@ export class SubtasksValidator {
     if (data.subtask_description !== undefined) {
       sanitized.subtask_description =
         typeof data.subtask_description === 'string'
-          ? data.subtask_description.trim() || null
+          ? data.subtask_description.trim() || undefined
           : data.subtask_description;
     }
 
@@ -252,14 +254,14 @@ export class SubtasksValidator {
     if (data.subtask_comment !== undefined) {
       sanitized.subtask_comment =
         typeof data.subtask_comment === 'string'
-          ? data.subtask_comment.trim() || null
+          ? data.subtask_comment.trim() || undefined
           : data.subtask_comment;
     }
 
     if (data.subtask_date !== undefined) {
       sanitized.subtask_date =
         typeof data.subtask_date === 'string'
-          ? data.subtask_date.trim() || null
+          ? data.subtask_date.trim() || undefined
           : data.subtask_date;
     }
 

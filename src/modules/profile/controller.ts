@@ -2,20 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { ProfileService } from './service';
 import { ProfileValidator } from './validation';
 import { ProfileError } from './types';
+import { withLogger } from '@/lib/logger-middleware';
 
 export class ProfileController {
-  static async getProfile(
+  static getProfile = withLogger(async (
     request: NextRequest,
     { params }: { params: { id: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const result = await ProfileService.getProfile(userId);
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get profile controller error:', error);
-
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -28,12 +27,12 @@ export class ProfileController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updateProfile(
+  static updateProfile = withLogger(async (
     request: NextRequest,
     { params }: { params: { id: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const body = await request.json();
@@ -42,8 +41,6 @@ export class ProfileController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Update profile controller error:', error);
-
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -56,12 +53,12 @@ export class ProfileController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async changePassword(
+  static changePassword = withLogger(async (
     request: NextRequest,
     { params }: { params: { id: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const body = await request.json();
@@ -70,8 +67,6 @@ export class ProfileController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Change password controller error:', error);
-
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -84,12 +79,12 @@ export class ProfileController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async uploadProfileImage(
+  static uploadProfileImage = withLogger(async (
     request: NextRequest,
     { params }: { params: { id: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const userId = ProfileValidator.validateUserId(params.id);
       const body = await request.json();
@@ -105,8 +100,6 @@ export class ProfileController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Upload profile image controller error:', error);
-
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -119,10 +112,10 @@ export class ProfileController {
         { status: 500 }
       );
     }
-  }
+  });
 
   // For getting current user's profile (without user ID in params)
-  static async getCurrentProfile(request: NextRequest): Promise<NextResponse> {
+  static getCurrentProfile = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       // For now, using hardcoded user ID (in a real app, this would come from JWT/session)
       const userId = 1;
@@ -131,8 +124,6 @@ export class ProfileController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get current profile controller error:', error);
-
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -145,9 +136,9 @@ export class ProfileController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updateCurrentProfile(request: NextRequest): Promise<NextResponse> {
+  static updateCurrentProfile = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       // For now, using hardcoded user ID (in a real app, this would come from JWT/session)
       const userId = 1;
@@ -157,8 +148,6 @@ export class ProfileController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Update current profile controller error:', error);
-
       if (error instanceof ProfileError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -171,5 +160,5 @@ export class ProfileController {
         { status: 500 }
       );
     }
-  }
+  });
 }

@@ -81,7 +81,7 @@ export default function UsersPage() {
       } else {
         setError(data.message);
       }
-    } catch (err) {
+    } catch (_) {
       setError('Failed to fetch users');
     } finally {
       setLoading(false);
@@ -131,7 +131,7 @@ export default function UsersPage() {
       } else {
         setError(result.message);
       }
-    } catch (err) {
+    } catch (_) {
       setError('Failed to create user');
     } finally {
       setLoading(false);

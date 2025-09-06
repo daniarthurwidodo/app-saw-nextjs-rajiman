@@ -1,0 +1,14 @@
+{
+  "name": "logger-test",
+  "version": "1.0.0",
+  "description": "Test script for the logging system",
+  "main": "logger-test.js",
+  "type": "module",
+  "scripts": {
+    "test:logger": "node --loader ts-node/esm src/lib/logger-test.ts"
+  },
+  "dependencies": {
+    "pino": "^9.5.0",
+    "pino-pretty": "^13.0.0"
+  }
+}

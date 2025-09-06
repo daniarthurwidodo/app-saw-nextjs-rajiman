@@ -102,7 +102,7 @@ async function main() {
 
     // Default app settings
     const defaultSettings = [
-      { key: 'site_name', value: 'Claude Code - School Management System', category: 'general' },
+      { key: 'site_name', value: 'Qwen Code - School Management System', category: 'general' },
       { key: 'session_timeout', value: '30', category: 'security' },
       { key: 'max_login_attempts', value: '5', category: 'security' },
       { key: 'require_2fa', value: 'false', category: 'security' },

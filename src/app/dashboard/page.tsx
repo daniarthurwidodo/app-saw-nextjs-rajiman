@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
-import { useAuth } from '@/contexts/AuthContext';
 
 interface DashboardStats {
   totalUsers: number;
@@ -31,8 +30,8 @@ export default function Dashboard() {
         if (data.success) {
           setStats(data.data);
         }
-      } catch (error) {
-        console.error('Failed to fetch dashboard stats:', error);
+      } catch (_) {
+        console.error('Failed to fetch dashboard stats');
       } finally {
         setLoading(false);
       }
@@ -43,7 +42,7 @@ export default function Dashboard() {
   return (
     <div className='container mx-auto p-6'>
       <div className='flex justify-between items-center mb-6'>
-        <h1 className='text-3xl font-bold'>Claude Code Dashboard</h1>
+        <h1 className='text-3xl font-bold'>Qwen Code Dashboard</h1>
         <Button>New Task</Button>
       </div>
 

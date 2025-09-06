@@ -247,8 +247,8 @@ export default function DocumentsPage() {
         },
       ];
       setDocuments(mockDocuments);
-    } catch (error) {
-      console.error('Failed to fetch documents:', error);
+    } catch (_) {
+      console.error('Failed to fetch documents');
       toast.error('Failed to load documents');
     } finally {
       setLoading(false);

@@ -1,5 +1,8 @@
 import { TasksController } from '@/modules/tasks/controller';
+import { NextRequest } from 'next/server';
 
-export async function GET() {
-  return TasksController.getTasksByStatus();
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
+  return TasksController.getTasksByStatus(request);
 }

@@ -7,9 +7,10 @@ import {
   PaginationParams,
   SubtaskFilters,
 } from './types';
+import { withLogger } from '@/lib/logger-middleware';
 
 export class SubtasksController {
-  static async getSubtasks(request: NextRequest): Promise<NextResponse> {
+  static getSubtasks = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const { searchParams } = new URL(request.url);
 
@@ -42,8 +43,6 @@ export class SubtasksController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get subtasks controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -63,12 +62,12 @@ export class SubtasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getSubtasksByTask(
+  static getSubtasksByTask = withLogger(async (
     request: NextRequest,
     params: { id: string }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const taskId = parseInt(params.id);
 
@@ -86,8 +85,6 @@ export class SubtasksController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get subtasks by task controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -107,16 +104,14 @@ export class SubtasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getSubtasksByStatus(): Promise<NextResponse> {
+  static getSubtasksByStatus = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const result = await SubtasksService.getSubtasksByStatus();
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get subtasks by status controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -136,16 +131,14 @@ export class SubtasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getSubtasksProgress(): Promise<NextResponse> {
+  static getSubtasksProgress = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const result = await SubtasksService.getSubtasksProgress();
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get subtasks progress controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -165,9 +158,9 @@ export class SubtasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getSubtaskById(request: NextRequest, params: { id: string }): Promise<NextResponse> {
+  static getSubtaskById = withLogger(async (request: NextRequest, params: { id: string }): Promise<NextResponse> => {
     try {
       const subtaskId = parseInt(params.id);
 
@@ -185,8 +178,6 @@ export class SubtasksController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get subtask by id controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -206,9 +197,9 @@ export class SubtasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async createSubtask(request: NextRequest): Promise<NextResponse> {
+  static createSubtask = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const body: CreateSubtaskRequest = await request.json();
 
@@ -216,8 +207,6 @@ export class SubtasksController {
 
       return NextResponse.json(result, { status: 201 });
     } catch (error) {
-      console.error('Create subtask controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -237,9 +226,9 @@ export class SubtasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updateSubtask(request: NextRequest, params: { id: string }): Promise<NextResponse> {
+  static updateSubtask = withLogger(async (request: NextRequest, params: { id: string }): Promise<NextResponse> => {
     try {
       const subtaskId = parseInt(params.id);
 
@@ -259,8 +248,6 @@ export class SubtasksController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Update subtask controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -276,13 +263,14 @@ export class SubtasksController {
         {
           success: false,
           message: 'An error occurred while updating subtask',
+          error: process.env.NODE_ENV === 'development' ? String(error) : undefined,
         },
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async deleteSubtask(request: NextRequest, params: { id: string }): Promise<NextResponse> {
+  static deleteSubtask = withLogger(async (request: NextRequest, params: { id: string }): Promise<NextResponse> => {
     try {
       const subtaskId = parseInt(params.id);
 
@@ -300,8 +288,6 @@ export class SubtasksController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Delete subtask controller error:', error);
-
       if (error instanceof SubtasksError) {
         return NextResponse.json(
           {
@@ -321,5 +307,5 @@ export class SubtasksController {
         { status: 500 }
       );
     }
-  }
+  });
 }

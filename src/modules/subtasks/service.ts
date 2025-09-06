@@ -13,8 +13,8 @@ import {
   SubtaskFilters,
   PaginationParams,
   SubtasksError,
-  SubtaskStatus,
 } from './types';
+import { SubtaskStatus } from '@/types';
 import { SubtasksValidator } from './validation';
 
 export class SubtasksService {
@@ -259,7 +259,7 @@ export class SubtasksService {
         created_at: subtask.createdAt?.toISOString() || '',
         updated_at: subtask.updatedAt?.toISOString() || '',
         task_title: subtask.task?.title,
-        task_created_by: subtask.task?.createdBy,
+        task_created_by: subtask.task?.createdBy !== null ? subtask.task?.createdBy : undefined,
         task_created_by_name: subtask.task?.creator?.name,
       };
 
@@ -304,9 +304,9 @@ export class SubtasksService {
       // Validate assigned user exists if provided
       if (sanitizedData.assigned_to) {
         const user = await prisma.user.findFirst({
-          where: { 
+          where: {
             id: sanitizedData.assigned_to,
-            isActive: true 
+            isActive: true,
           },
         });
         if (!user) {
@@ -352,7 +352,7 @@ export class SubtasksService {
         created_at: createdSubtask.createdAt?.toISOString() || '',
         updated_at: createdSubtask.updatedAt?.toISOString() || '',
         task_title: createdSubtask.task?.title,
-        task_created_by: createdSubtask.task?.createdBy,
+        task_created_by: createdSubtask.task?.createdBy ?? undefined,
         task_created_by_name: createdSubtask.task?.creator?.name,
       };
 
@@ -373,24 +373,32 @@ export class SubtasksService {
 
   static async updateSubtask(
     subtaskId: number,
-    updateData: UpdateSubtaskRequest
+    requestData: UpdateSubtaskRequest
   ): Promise<SubtaskResponse> {
     try {
-      // Validate input
-      const validationErrors = SubtasksValidator.validateUpdateSubtask(updateData);
-      if (validationErrors.length > 0) {
+      console.log('=== UPDATE SUBTASK SERVICE DEBUG ===');
+      console.log('Subtask ID:', subtaskId);
+      console.log('Update data received:', requestData);
+
+      // Manual validation to avoid any enum import issues
+      if (
+        requestData.subtask_status &&
+        !['todo', 'in_progress', 'done'].includes(requestData.subtask_status)
+      ) {
         throw new SubtasksError(
-          `Validation failed: ${validationErrors.map((e) => e.message).join(', ')}`,
+          'Invalid subtask status. Must be todo, in_progress, or done',
           400,
           'VALIDATION_ERROR'
         );
       }
 
       // Check if subtask exists
-      await this.getSubtaskById(subtaskId);
+      console.log('Checking if subtask exists...');
+      const currentSubtask = await this.getSubtaskById(subtaskId);
+      console.log('Current subtask status:', currentSubtask.subtask.subtask_status);
 
-      // Sanitize input
-      const sanitizedData = SubtasksValidator.sanitizeUpdateSubtask(updateData);
+      // Sanitize input - temporarily use raw data
+      const sanitizedData = requestData; // SubtasksValidator.sanitizeUpdateSubtask(requestData);
 
       // Validate assigned user exists if provided
       if (sanitizedData.assigned_to) {
@@ -409,38 +417,49 @@ export class SubtasksService {
       }
 
       // Build update data for Prisma
-      const updateData: any = {};
+      const prismaUpdateData: any = {};
 
       if (sanitizedData.subtask_title !== undefined) {
-        updateData.title = sanitizedData.subtask_title;
+        prismaUpdateData.title = sanitizedData.subtask_title;
       }
 
       if (sanitizedData.subtask_description !== undefined) {
-        updateData.description = sanitizedData.subtask_description;
+        prismaUpdateData.description = sanitizedData.subtask_description;
       }
 
       if (sanitizedData.assigned_to !== undefined) {
-        updateData.assignedTo = sanitizedData.assigned_to;
+        prismaUpdateData.assignedTo = sanitizedData.assigned_to;
       }
 
       if (sanitizedData.subtask_status !== undefined) {
         // Map subtask_status to both status and isCompleted fields
-        updateData.status = sanitizedData.subtask_status;
-        updateData.isCompleted = sanitizedData.subtask_status === SubtaskStatus.DONE;
+        prismaUpdateData.status = sanitizedData.subtask_status;
+        prismaUpdateData.isCompleted = sanitizedData.subtask_status === 'done';
+        console.log('Status mapping:', {
+          received: sanitizedData.subtask_status,
+          mappedStatus: prismaUpdateData.status,
+          mappedCompleted: prismaUpdateData.isCompleted,
+        });
       }
 
-      if (Object.keys(updateData).length === 0) {
+      console.log('Final prismaUpdateData:', prismaUpdateData);
+
+      if (Object.keys(prismaUpdateData).length === 0) {
         throw new SubtasksError('No fields to update', 400, 'NO_UPDATE_FIELDS');
       }
 
       // Update using Prisma
+      console.log('Updating subtask with Prisma...');
       await prisma.subtask.update({
         where: { id: subtaskId },
-        data: updateData,
+        data: prismaUpdateData,
       });
+      console.log('Prisma update completed successfully');
 
       // Get updated subtask
+      console.log('Fetching updated subtask...');
       const updatedSubtask = await this.getSubtaskById(subtaskId);
+      console.log('Updated subtask status:', updatedSubtask.subtask.subtask_status);
 
       return {
         success: true,
@@ -448,12 +467,23 @@ export class SubtasksService {
         subtask: updatedSubtask.subtask,
       };
     } catch (error) {
+      console.error('Update subtask service error - full details:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
+
       if (error instanceof SubtasksError) {
+        console.log('Rethrowing SubtasksError:', error.message);
         throw error;
       }
 
-      console.error('Update subtask service error:', error);
-      throw new SubtasksError('An error occurred while updating subtask', 500, 'INTERNAL_ERROR');
+      console.error('Creating new SubtasksError from:', error);
+      throw new SubtasksError(
+        `Update failed: ${error instanceof Error ? error.message : String(error)}`,
+        500,
+        'INTERNAL_ERROR'
+      );
     }
   }
 

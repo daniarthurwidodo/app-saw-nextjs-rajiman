@@ -50,7 +50,7 @@ export default function AddSubtaskModal({
     assigned_to: null,
     images: [],
   });
-  
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -102,14 +102,15 @@ export default function AddSubtaskModal({
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
-    
+
     // Validate file types and sizes
     const validFiles = files.filter((file) => {
       if (!file.type.startsWith('image/')) {
         toast.error(`${file.name} is not a valid image file`);
         return false;
       }
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      if (file.size > 10 * 1024 * 1024) {
+        // 10MB limit
         toast.error(`${file.name} is too large. Maximum size is 10MB`);
         return false;
       }
@@ -187,7 +188,7 @@ export default function AddSubtaskModal({
           status: response.status,
           statusText: response.statusText,
           errorData,
-          requestData: subtaskData
+          requestData: subtaskData,
         });
         throw new Error(errorData.message || 'Failed to create subtask');
       }
@@ -237,45 +238,43 @@ export default function AddSubtaskModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>Add Subtask</DialogTitle>
-          <DialogDescription>
-            Add a new subtask to &quot;{task.title}&quot;
-          </DialogDescription>
+          <DialogDescription>Add a new subtask to &quot;{task.title}&quot;</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4">
+        <form onSubmit={handleSubmit} className='space-y-4'>
+          <div className='grid gap-4'>
             {/* Title */}
             <div>
-              <Label htmlFor="title">
-                Title <span className="text-red-500">*</span>
+              <Label htmlFor='title'>
+                Title <span className='text-red-500'>*</span>
               </Label>
               <Input
-                id="title"
+                id='title'
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="Enter subtask title"
+                placeholder='Enter subtask title'
                 required
               />
             </div>
 
             {/* Description */}
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor='description'>Description</Label>
               <Textarea
-                id="description"
+                id='description'
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Enter subtask description (optional)"
+                placeholder='Enter subtask description (optional)'
                 rows={3}
               />
             </div>
 
             {/* Assign to User */}
             <div>
-              <Label htmlFor="assigned_to">Assign to</Label>
+              <Label htmlFor='assigned_to'>Assign to</Label>
               <Select
                 value={formData.assigned_to?.toString() || 'unassigned'}
                 onValueChange={(value) =>
@@ -284,10 +283,12 @@ export default function AddSubtaskModal({
                 disabled={loadingUsers}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={loadingUsers ? 'Loading users...' : 'Select a user (optional)'} />
+                  <SelectValue
+                    placeholder={loadingUsers ? 'Loading users...' : 'Select a user (optional)'}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  <SelectItem value='unassigned'>Unassigned</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.user_id} value={user.user_id.toString()}>
                       {user.name} ({user.role.replace('_', ' ')})
@@ -299,26 +300,26 @@ export default function AddSubtaskModal({
 
             {/* Image Upload */}
             <div>
-              <Label htmlFor="images">Images</Label>
-              <div className="space-y-2">
-                <div className="flex items-center justify-center w-full">
+              <Label htmlFor='images'>Images</Label>
+              <div className='space-y-2'>
+                <div className='flex items-center justify-center w-full'>
                   <label
-                    htmlFor="images"
-                    className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                    htmlFor='images'
+                    className='flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100'
                   >
-                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <Upload className="w-8 h-8 mb-4 text-gray-500" />
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
+                    <div className='flex flex-col items-center justify-center pt-5 pb-6'>
+                      <Upload className='w-8 h-8 mb-4 text-gray-500' />
+                      <p className='mb-2 text-sm text-gray-500'>
+                        <span className='font-semibold'>Click to upload</span> or drag and drop
                       </p>
-                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                      <p className='text-xs text-gray-500'>PNG, JPG, GIF up to 10MB</p>
                     </div>
                     <input
-                      id="images"
-                      type="file"
-                      className="hidden"
+                      id='images'
+                      type='file'
+                      className='hidden'
                       multiple
-                      accept="image/*"
+                      accept='image/*'
                       onChange={handleImageUpload}
                     />
                   </label>
@@ -326,22 +327,22 @@ export default function AddSubtaskModal({
 
                 {/* Image Previews */}
                 {imagePreviews.length > 0 && (
-                  <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div className='grid grid-cols-2 gap-4 mt-4'>
                     {imagePreviews.map((preview, index) => (
-                      <div key={index} className="relative group">
+                      <div key={index} className='relative group'>
                         <img
                           src={preview}
                           alt={`Preview ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-md border"
+                          className='w-full h-24 object-cover rounded-md border'
                         />
                         <button
-                          type="button"
+                          type='button'
                           onClick={() => removeImage(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity'
                         >
-                          <X className="h-3 w-3" />
+                          <X className='h-3 w-3' />
                         </button>
-                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                        <div className='absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded'>
                           {formData.images[index]?.name}
                         </div>
                       </div>
@@ -354,17 +355,17 @@ export default function AddSubtaskModal({
 
           <DialogFooter>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type='submit' disabled={loading}>
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2' />
                   Creating...
                 </>
               ) : (

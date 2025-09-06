@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AuthService } from './service';
 import { LoginRequest, RegisterRequest, AuthenticationError } from './types';
+import { withLogger } from '@/lib/logger-middleware';
 
 export class AuthController {
-  static async login(request: NextRequest): Promise<NextResponse> {
+  static login = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const body = await request.json();
       const loginData: LoginRequest = {
@@ -26,7 +27,6 @@ export class AuthController {
         );
       }
 
-      console.error('Login controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -36,9 +36,9 @@ export class AuthController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async register(request: NextRequest): Promise<NextResponse> {
+  static register = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const body = await request.json();
       const registerData: RegisterRequest = {
@@ -64,7 +64,6 @@ export class AuthController {
         );
       }
 
-      console.error('Register controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -74,9 +73,9 @@ export class AuthController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getProfile(request: NextRequest): Promise<NextResponse> {
+  static getProfile = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       // In a real implementation, you would extract user ID from JWT token
       // For now, we'll use a query parameter or assume it's passed somehow
@@ -113,7 +112,6 @@ export class AuthController {
         );
       }
 
-      console.error('Get profile controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -123,9 +121,9 @@ export class AuthController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updatePassword(request: NextRequest): Promise<NextResponse> {
+  static updatePassword = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const body = await request.json();
       const { userId, newPassword } = body;
@@ -159,7 +157,6 @@ export class AuthController {
         );
       }
 
-      console.error('Update password controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -169,5 +166,5 @@ export class AuthController {
         { status: 500 }
       );
     }
-  }
+  });
 }

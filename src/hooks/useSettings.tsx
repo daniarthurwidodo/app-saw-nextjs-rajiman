@@ -36,7 +36,7 @@ export function useSettings() {
         setError(data.message || 'Failed to fetch settings');
         // Use default settings if API fails
         setSettings({
-          app_name: 'Claude Code - School Management System',
+          app_name: 'Qwen Code - School Management System',
           app_description: 'A comprehensive school management and task tracking system',
         });
       }
@@ -45,7 +45,7 @@ export function useSettings() {
       setError('Failed to fetch settings');
       // Use default settings if API fails
       setSettings({
-        app_name: 'Claude Code - School Management System',
+        app_name: 'Qwen Code - School Management System',
         app_description: 'A comprehensive school management and task tracking system',
       });
     } finally {

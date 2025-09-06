@@ -1,4 +1,4 @@
-# Claude Code - School Management System
+# Qwen Code - School Management System
 
 A comprehensive school management and decision support system built with Next.js 15, TypeScript, and MySQL.
 

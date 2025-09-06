@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SettingsService } from './service';
 import { SettingsError } from './types';
+import { withLogger } from '@/lib/logger-middleware';
 
 export class SettingsController {
-  static async getAllSettings(request: NextRequest): Promise<NextResponse> {
+  static getAllSettings = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const result = await SettingsService.getAllSettings();
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get all settings controller error:', error);
-
       if (error instanceof SettingsError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -22,18 +21,16 @@ export class SettingsController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getSettingsByCategory(
+  static getSettingsByCategory = withLogger(async (
     request: NextRequest,
     { params }: { params: { category: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const result = await SettingsService.getSettingsByCategory(params.category);
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get settings by category controller error:', error);
-
       if (error instanceof SettingsError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -46,12 +43,12 @@ export class SettingsController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getSetting(
+  static getSetting = withLogger(async (
     request: NextRequest,
     { params }: { params: { key: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const value = await SettingsService.getSetting(params.key);
       return NextResponse.json({
@@ -60,8 +57,6 @@ export class SettingsController {
         value,
       });
     } catch (error) {
-      console.error('Get setting controller error:', error);
-
       if (error instanceof SettingsError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -74,19 +69,17 @@ export class SettingsController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updateSetting(
+  static updateSetting = withLogger(async (
     request: NextRequest,
     { params }: { params: { key: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const body = await request.json();
       const result = await SettingsService.updateSetting(params.key, body.value);
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Update setting controller error:', error);
-
       if (error instanceof SettingsError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -99,16 +92,14 @@ export class SettingsController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updateMultipleSettings(request: NextRequest): Promise<NextResponse> {
+  static updateMultipleSettings = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const body = await request.json();
       const result = await SettingsService.updateMultipleSettings(body);
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Update multiple settings controller error:', error);
-
       if (error instanceof SettingsError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -121,5 +112,5 @@ export class SettingsController {
         { status: 500 }
       );
     }
-  }
+  });
 }

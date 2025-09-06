@@ -97,8 +97,8 @@ export default function ReportsPage() {
         kepala_sekolah: 5,
         user: dashboardStats.totalUsers - 9,
       });
-    } catch (error) {
-      console.error('Failed to fetch reports data:', error);
+    } catch (_) {
+      console.error('Failed to fetch reports data');
     } finally {
       setLoading(false);
     }

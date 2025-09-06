@@ -1,4 +1,4 @@
-# Claude Code - School Management System
+# Qwen Code - School Management System
 
 ## Product Requirements Document (PRD)
 
@@ -12,7 +12,7 @@
 
 ## 1. Executive Summary
 
-**Claude Code** is a comprehensive school management and decision support system designed to streamline administrative processes, facilitate strategic decision-making, and enhance task management across different organizational levels within educational institutions.
+**Qwen Code** is a comprehensive school management and decision support system designed to streamline administrative processes, facilitate strategic decision-making, and enhance task management across different organizational levels within educational institutions.
 
 ### 1.1 Product Vision
 
@@ -468,7 +468,7 @@ To create an integrated platform that empowers educational administrators and st
 
 ## 15. Conclusion
 
-Claude Code represents a comprehensive solution for modern educational institution management built on Next.js 15, combining strategic decision-making capabilities with efficient operational task management. The system leverages the latest Next.js features including App Router, Server Components, and Turbopack for optimal performance.
+Qwen Code represents a comprehensive solution for modern educational institution management built on Next.js 15, combining strategic decision-making capabilities with efficient operational task management. The system leverages the latest Next.js features including App Router, Server Components, and Turbopack for optimal performance.
 
 The technical implementation using Next.js 15, MySQL, and shadcn/ui ensures scalability, maintainability, and excellent developer experience. The responsive design approach guarantees accessibility across all device types, making it suitable for the diverse technological landscape of educational institutions.
 

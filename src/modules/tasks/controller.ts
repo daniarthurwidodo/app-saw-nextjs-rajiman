@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { TasksService } from './service';
 import { TasksValidator } from './validation';
 import { TasksError } from './types';
+import { withLogger } from '@/lib/logger-middleware';
 
 export class TasksController {
-  static async getTasks(request: NextRequest): Promise<NextResponse> {
+  static getTasks = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const { searchParams } = new URL(request.url);
 
@@ -28,8 +29,6 @@ export class TasksController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get tasks controller error:', error);
-
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -42,15 +41,13 @@ export class TasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getTasksByStatus(): Promise<NextResponse> {
+  static getTasksByStatus = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const result = await TasksService.getTasksByStatus();
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get tasks by status controller error:', error);
-
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -63,20 +60,18 @@ export class TasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getTaskById(
+  static getTaskById = withLogger(async (
     request: NextRequest,
     { params }: { params: { id: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const taskId = TasksValidator.validateTaskId(params.id);
       const result = await TasksService.getTaskById(taskId);
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Get task by id controller error:', error);
-
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -89,9 +84,9 @@ export class TasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async createTask(request: NextRequest): Promise<NextResponse> {
+  static createTask = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const body = await request.json();
 
@@ -103,8 +98,6 @@ export class TasksController {
 
       return NextResponse.json(result, { status: 201 });
     } catch (error) {
-      console.error('Create task controller error:', error);
-
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -117,12 +110,12 @@ export class TasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updateTask(
+  static updateTask = withLogger(async (
     request: NextRequest,
     { params }: { params: { id: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const taskId = TasksValidator.validateTaskId(params.id);
       const body = await request.json();
@@ -131,8 +124,6 @@ export class TasksController {
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Update task controller error:', error);
-
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -145,20 +136,18 @@ export class TasksController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async deleteTask(
+  static deleteTask = withLogger(async (
     request: NextRequest,
     { params }: { params: { id: string } }
-  ): Promise<NextResponse> {
+  ): Promise<NextResponse> => {
     try {
       const taskId = TasksValidator.validateTaskId(params.id);
       const result = await TasksService.deleteTask(taskId);
 
       return NextResponse.json(result);
     } catch (error) {
-      console.error('Delete task controller error:', error);
-
       if (error instanceof TasksError) {
         return NextResponse.json(
           { success: false, message: error.message },
@@ -171,5 +160,5 @@ export class TasksController {
         { status: 500 }
       );
     }
-  }
+  });
 }

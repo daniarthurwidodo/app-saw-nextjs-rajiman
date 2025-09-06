@@ -50,7 +50,7 @@ export default function EditSubtaskModal({
     assigned_to: null,
     status: SubtaskStatus.TODO,
   });
-  
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
@@ -71,8 +71,12 @@ export default function EditSubtaskModal({
         title: subtask.title || subtask.subtask_title || '',
         description: subtask.subtask_description || '',
         assigned_to: subtask.assigned_to || null,
-        status: subtask.status === SubtaskStatus.DONE || subtask.is_completed ? SubtaskStatus.DONE : 
-                subtask.status === SubtaskStatus.IN_PROGRESS ? SubtaskStatus.IN_PROGRESS : SubtaskStatus.TODO,
+        status:
+          subtask.status === SubtaskStatus.DONE || subtask.is_completed
+            ? SubtaskStatus.DONE
+            : subtask.status === SubtaskStatus.IN_PROGRESS
+              ? SubtaskStatus.IN_PROGRESS
+              : SubtaskStatus.TODO,
       });
     }
   }, [subtask]);
@@ -114,7 +118,7 @@ export default function EditSubtaskModal({
       }
       return true;
     });
-    
+
     setSelectedFiles((prev) => [...prev, ...validFiles]);
   };
 
@@ -157,12 +161,18 @@ export default function EditSubtaskModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('=== EDIT SUBTASK SUBMIT DEBUG ===');
+    console.log('1. Form data:', formData);
+    console.log('2. Subtask data:', subtask);
+
     if (!subtask) {
+      console.log('ERROR: No subtask selected');
       toast.error('No subtask selected');
       return;
     }
 
     if (!formData.title.trim()) {
+      console.log('ERROR: Empty title');
       toast.error('Subtask title is required');
       return;
     }
@@ -170,25 +180,21 @@ export default function EditSubtaskModal({
     setLoading(true);
 
     try {
-      // First upload images if any selected
-      if (selectedFiles.length > 0) {
-        await uploadImages();
-      }
-
       const updateData: any = {
         subtask_title: formData.title.trim(),
         subtask_status: formData.status,
       };
 
-      // Only include description if it's not empty
       if (formData.description.trim()) {
         updateData.subtask_description = formData.description.trim();
       }
 
-      // Only include assigned_to if it's not null
       if (formData.assigned_to !== null) {
         updateData.assigned_to = formData.assigned_to;
       }
+
+      console.log('3. Update data to send:', updateData);
+      console.log('4. API URL:', `/api/subtasks/${subtask.subtask_id}`);
 
       const response = await fetch(`/api/subtasks/${subtask.subtask_id}`, {
         method: 'PUT',
@@ -198,16 +204,21 @@ export default function EditSubtaskModal({
         body: JSON.stringify(updateData),
       });
 
+      console.log('5. Response status:', response.status);
+      console.log('6. Response ok:', response.ok);
+
+      const responseData = await response.json();
+      console.log('7. Response data:', responseData);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update subtask');
+        throw new Error(responseData.message || 'Failed to update subtask');
       }
 
       toast.success('Subtask updated successfully!');
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {
-      console.error('Error updating subtask:', error);
+      console.error('8. ERROR updating subtask:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to update subtask');
     } finally {
       setLoading(false);
@@ -217,13 +228,13 @@ export default function EditSubtaskModal({
   const getStatusIcon = (status: SubtaskStatus) => {
     switch (status) {
       case SubtaskStatus.DONE:
-        return <Check className="h-4 w-4 text-green-600" />;
+        return <Check className='h-4 w-4 text-green-600' />;
       case SubtaskStatus.IN_PROGRESS:
-        return <Clock className="h-4 w-4 text-blue-600" />;
+        return <Clock className='h-4 w-4 text-blue-600' />;
       case SubtaskStatus.TODO:
-        return <Clock className="h-4 w-4 text-orange-600" />;
+        return <Clock className='h-4 w-4 text-orange-600' />;
       default:
-        return <Clock className="h-4 w-4 text-gray-600" />;
+        return <Clock className='h-4 w-4 text-gray-600' />;
     }
   };
 
@@ -244,26 +255,24 @@ export default function EditSubtaskModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className='max-w-2xl'>
         <DialogHeader>
           <DialogTitle>Edit Subtask</DialogTitle>
-          <DialogDescription>
-            Update subtask details and change its status
-          </DialogDescription>
+          <DialogDescription>Update subtask details and change its status</DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4">
+        <form onSubmit={handleSubmit} className='space-y-4'>
+          <div className='grid gap-4'>
             {/* Status */}
             <div>
-              <Label htmlFor="status">Status</Label>
+              <Label htmlFor='status'>Status</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value: SubtaskStatus) => handleInputChange('status', value)}
               >
                 <SelectTrigger>
                   <SelectValue>
-                    <div className="flex items-center gap-2">
+                    <div className='flex items-center gap-2'>
                       {getStatusIcon(formData.status)}
                       {getStatusLabel(formData.status)}
                     </div>
@@ -271,20 +280,20 @@ export default function EditSubtaskModal({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={SubtaskStatus.TODO}>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-orange-600" />
+                    <div className='flex items-center gap-2'>
+                      <Clock className='h-4 w-4 text-orange-600' />
                       To Do
                     </div>
                   </SelectItem>
                   <SelectItem value={SubtaskStatus.IN_PROGRESS}>
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-blue-600" />
+                    <div className='flex items-center gap-2'>
+                      <Clock className='h-4 w-4 text-blue-600' />
                       In Progress
                     </div>
                   </SelectItem>
                   <SelectItem value={SubtaskStatus.DONE}>
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-600" />
+                    <div className='flex items-center gap-2'>
+                      <Check className='h-4 w-4 text-green-600' />
                       Completed
                     </div>
                   </SelectItem>
@@ -294,33 +303,33 @@ export default function EditSubtaskModal({
 
             {/* Title */}
             <div>
-              <Label htmlFor="title">
-                Title <span className="text-red-500">*</span>
+              <Label htmlFor='title'>
+                Title <span className='text-red-500'>*</span>
               </Label>
               <Input
-                id="title"
+                id='title'
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="Enter subtask title"
+                placeholder='Enter subtask title'
                 required
               />
             </div>
 
             {/* Description */}
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor='description'>Description</Label>
               <Textarea
-                id="description"
+                id='description'
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Enter subtask description (optional)"
+                placeholder='Enter subtask description (optional)'
                 rows={3}
               />
             </div>
 
             {/* Assign to User */}
             <div>
-              <Label htmlFor="assigned_to">Assign to</Label>
+              <Label htmlFor='assigned_to'>Assign to</Label>
               <Select
                 value={formData.assigned_to?.toString() || 'unassigned'}
                 onValueChange={(value) =>
@@ -329,10 +338,12 @@ export default function EditSubtaskModal({
                 disabled={loadingUsers}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={loadingUsers ? 'Loading users...' : 'Select a user (optional)'} />
+                  <SelectValue
+                    placeholder={loadingUsers ? 'Loading users...' : 'Select a user (optional)'}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="unassigned">Unassigned</SelectItem>
+                  <SelectItem value='unassigned'>Unassigned</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.user_id} value={user.user_id.toString()}>
                       {user.name} ({user.role.replace('_', ' ')})
@@ -342,8 +353,8 @@ export default function EditSubtaskModal({
               </Select>
             </div>
 
-            {/* Image Upload Section */}
-            <div>
+            {/* Image Upload Section - TEMPORARILY DISABLED FOR DEBUGGING */}
+            {/* <div>
               <Label>Upload New Images</Label>
               <div className="space-y-3 mt-2">
                 <div className="flex items-center gap-2">
@@ -371,7 +382,7 @@ export default function EditSubtaskModal({
                 </div>
 
                 {/* Selected files preview */}
-                {selectedFiles.length > 0 && (
+            {/* {selectedFiles.length > 0 && (
                   <div className="space-y-2">
                     <Label className="text-sm text-gray-600">Selected Files:</Label>
                     <div className="max-h-32 overflow-y-auto space-y-1">
@@ -391,28 +402,28 @@ export default function EditSubtaskModal({
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
+                )} */}
+            {/* </div>
+            </div> */}
 
             {/* Show existing images if available */}
             {subtask.images && subtask.images.length > 0 && (
               <div>
                 <Label>Existing Images ({subtask.images.length})</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
+                <div className='grid grid-cols-3 gap-2 mt-2'>
                   {subtask.images.slice(0, 6).map((image) => (
-                    <div key={image.image_id} className="relative group">
+                    <div key={image.image_id} className='relative group'>
                       <img
                         src={image.url}
                         alt={`Subtask image ${image.image_id}`}
-                        className="w-full h-20 object-cover rounded-md border cursor-pointer hover:opacity-80 transition-opacity"
+                        className='w-full h-20 object-cover rounded-md border cursor-pointer hover:opacity-80 transition-opacity'
                         onClick={() => window.open(image.url, '_blank')}
-                        title="Click to view full size"
+                        title='Click to view full size'
                       />
                     </div>
                   ))}
                   {subtask.images.length > 6 && (
-                    <div className="flex items-center justify-center h-20 bg-gray-100 rounded-md border text-gray-500 text-sm">
+                    <div className='flex items-center justify-center h-20 bg-gray-100 rounded-md border text-gray-500 text-sm'>
                       +{subtask.images.length - 6} more
                     </div>
                   )}
@@ -423,17 +434,17 @@ export default function EditSubtaskModal({
 
           <DialogFooter>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type='submit' disabled={loading}>
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2' />
                   Updating...
                 </>
               ) : (

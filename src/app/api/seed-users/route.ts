@@ -361,7 +361,7 @@ export async function POST() {
       const defaultSettings = [
         {
           setting_key: 'app_name',
-          setting_value: 'Claude Code School Management',
+          setting_value: 'Qwen Code School Management',
           description: 'Application name displayed in the interface',
         },
         {

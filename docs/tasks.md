@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Task Management system provides a comprehensive solution for creating, managing, and tracking tasks with nested subtasks and image attachments. Built with Next.js 15, Prisma ORM, and MySQL.
+The Task Management system provides a comprehensive solution for creating, managing, and tracking tasks with nested subtasks and image attachments. Built with Next.js 15, Prisma ORM, and MySQL for Qwen Code.
 
 ## Features
 

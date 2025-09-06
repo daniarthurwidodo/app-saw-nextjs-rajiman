@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "School Management System API",
+    "name": "Qwen Code - School Management System API",
     "description": "Comprehensive API collection for the School Management System with Tasks and Subtasks",
     "version": "2.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"

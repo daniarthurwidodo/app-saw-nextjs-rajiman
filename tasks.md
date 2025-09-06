@@ -4,7 +4,7 @@
 
 - [x] Create Next.js 15 app with TypeScript and Tailwind CSS
 - [x] Initialize git repository
-- [x] Setup project documentation (CLAUDE.md, README.md, PRD.md)
+- [x] Setup project documentation (QWEN.md, README.md, PRD.md)
 - [x] Install MySQL database dependencies (mysql2)
 - [x] Setup shadcn/ui components with Tailwind CSS v4
 - [x] Configure database connection with pooling

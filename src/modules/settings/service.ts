@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { SettingsResponse, SettingResponse, SettingsError } from './types';
+import { SettingsResponse, SettingResponse, SettingsError, AppSetting } from './types';
 
 const prisma = new PrismaClient();
 
@@ -21,6 +21,24 @@ function parseSettingValue(value: string): SettingValue {
   } catch {
     return value;
   }
+}
+
+// Helper function to map Prisma model to AppSetting interface
+function mapPrismaToAppSetting(prismaSetting: any): AppSetting {
+  return {
+    setting_id: prismaSetting.id,
+    setting_key: prismaSetting.key,
+    setting_value: prismaSetting.value || '',
+    setting_type: prismaSetting.setting_type || 'string',
+    description: prismaSetting.description,
+    category: prismaSetting.category || '',
+    created_at: prismaSetting.createdAt
+      ? prismaSetting.createdAt.toISOString()
+      : new Date().toISOString(),
+    updated_at: prismaSetting.updatedAt
+      ? prismaSetting.updatedAt.toISOString()
+      : new Date().toISOString(),
+  };
 }
 
 export class SettingsService {
@@ -99,7 +117,7 @@ export class SettingsService {
       return {
         success: true,
         message: `Setting ${key} updated successfully`,
-        setting: updatedSetting,
+        setting: mapPrismaToAppSetting(updatedSetting),
       };
     } catch (error) {
       if (error instanceof SettingsError) throw error;
@@ -115,7 +133,8 @@ export class SettingsService {
       const settingsToUpdate = Object.entries(updates);
       const updatedSettings: Record<string, SettingValue> = {};
 
-      await prisma.$transaction(async (tx: PrismaClient) => {
+      // Use the correct transaction syntax
+      await prisma.$transaction(async (tx) => {
         for (const [key, value] of settingsToUpdate) {
           const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
           await tx.appSetting.update({

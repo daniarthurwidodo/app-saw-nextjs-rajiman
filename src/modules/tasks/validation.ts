@@ -235,7 +235,7 @@ export class TasksValidator {
     }
 
     if (data.description !== undefined) {
-      sanitized.description = data.description ? this.sanitizeInput(data.description) : null;
+      sanitized.description = data.description ? this.sanitizeInput(data.description) : undefined;
     }
 
     if (data.status !== undefined) {

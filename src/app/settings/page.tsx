@@ -59,7 +59,7 @@ export default function SettingsPage() {
   const [showResetConfirmation, setShowResetConfirmation] = useState(false);
 
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
-    system_name: 'Claude Code - School Management System',
+    system_name: 'Qwen Code - School Management System',
     system_description: 'A comprehensive school management and task tracking system',
     admin_email: 'admin@school-system.com',
     timezone: 'Asia/Jakarta',
@@ -93,7 +93,7 @@ export default function SettingsPage() {
       // Mock API call - in real app, this would save to database
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success('System settings saved successfully');
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to save system settings');
     } finally {
       setSaving(false);
@@ -105,7 +105,7 @@ export default function SettingsPage() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success('Notification settings saved successfully');
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to save notification settings');
     } finally {
       setSaving(false);
@@ -117,7 +117,7 @@ export default function SettingsPage() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success('Security settings saved successfully');
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to save security settings');
     } finally {
       setSaving(false);
@@ -135,7 +135,7 @@ export default function SettingsPage() {
       } else {
         toast.error(result.message || 'Failed to initialize database');
       }
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to initialize database');
     } finally {
       setDbOperationInProgress(false);
@@ -153,7 +153,7 @@ export default function SettingsPage() {
       } else {
         toast.error(result.message || 'Failed to seed database');
       }
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to seed database');
     } finally {
       setDbOperationInProgress(false);
@@ -172,7 +172,7 @@ export default function SettingsPage() {
       } else {
         toast.error(result.message || 'Failed to reset database');
       }
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to reset database');
     } finally {
       setDbOperationInProgress(false);
@@ -190,7 +190,7 @@ export default function SettingsPage() {
       } else {
         toast.error(result.message || 'Failed to migrate database');
       }
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to migrate database');
     } finally {
       setDbOperationInProgress(false);
@@ -208,7 +208,7 @@ export default function SettingsPage() {
       } else {
         toast.error(result.message || 'Database connection failed');
       }
-    } catch (error) {
+    } catch (_) {
       toast.error('Failed to test database connection');
     } finally {
       setDbOperationInProgress(false);

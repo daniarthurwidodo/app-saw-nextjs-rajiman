@@ -3,9 +3,10 @@ import { UsersService } from './service';
 import { CreateUserRequest, UpdateUserRequest, UsersError } from './types';
 import { UsersValidator } from './validation';
 import { UserRole } from '@/types';
+import { withLogger } from '@/lib/logger-middleware';
 
 export class UsersController {
-  static async getUsers(request: NextRequest): Promise<NextResponse> {
+  static getUsers = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const url = new URL(request.url);
       const searchParams = url.searchParams;
@@ -39,7 +40,6 @@ export class UsersController {
         );
       }
 
-      console.error('Get users controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -49,9 +49,9 @@ export class UsersController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getUserById(request: NextRequest, userId: string): Promise<NextResponse> {
+  static getUserById = withLogger(async (request: NextRequest, userId: string): Promise<NextResponse> => {
     try {
       const validatedUserId = UsersValidator.validateUserId(userId);
       const result = await UsersService.getUserById(validatedUserId);
@@ -69,7 +69,6 @@ export class UsersController {
         );
       }
 
-      console.error('Get user by id controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -79,9 +78,9 @@ export class UsersController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async createUser(request: NextRequest): Promise<NextResponse> {
+  static createUser = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const body = await request.json();
       const userData: CreateUserRequest = {
@@ -107,7 +106,6 @@ export class UsersController {
         );
       }
 
-      console.error('Create user controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -117,9 +115,9 @@ export class UsersController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async updateUser(request: NextRequest, userId: string): Promise<NextResponse> {
+  static updateUser = withLogger(async (request: NextRequest, userId: string): Promise<NextResponse> => {
     try {
       const validatedUserId = UsersValidator.validateUserId(userId);
       const body = await request.json();
@@ -154,7 +152,6 @@ export class UsersController {
         );
       }
 
-      console.error('Update user controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -164,9 +161,9 @@ export class UsersController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async deleteUser(request: NextRequest, userId: string): Promise<NextResponse> {
+  static deleteUser = withLogger(async (request: NextRequest, userId: string): Promise<NextResponse> => {
     try {
       const validatedUserId = UsersValidator.validateUserId(userId);
       const result = await UsersService.deleteUser(validatedUserId);
@@ -184,7 +181,6 @@ export class UsersController {
         );
       }
 
-      console.error('Delete user controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -194,9 +190,9 @@ export class UsersController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getUsersByRole(request: NextRequest): Promise<NextResponse> {
+  static getUsersByRole = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const url = new URL(request.url);
       const role = url.searchParams.get('role') as UserRole;
@@ -246,7 +242,6 @@ export class UsersController {
         );
       }
 
-      console.error('Get users by role controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -256,9 +251,9 @@ export class UsersController {
         { status: 500 }
       );
     }
-  }
+  });
 
-  static async getUsersBySchool(request: NextRequest): Promise<NextResponse> {
+  static getUsersBySchool = withLogger(async (request: NextRequest): Promise<NextResponse> => {
     try {
       const url = new URL(request.url);
       const schoolIdParam = url.searchParams.get('school_id');
@@ -308,7 +303,6 @@ export class UsersController {
         );
       }
 
-      console.error('Get users by school controller error:', error);
       return NextResponse.json(
         {
           success: false,
@@ -318,5 +312,5 @@ export class UsersController {
         { status: 500 }
       );
     }
-  }
+  });
 }

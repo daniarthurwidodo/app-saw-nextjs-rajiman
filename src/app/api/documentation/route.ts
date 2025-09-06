@@ -7,17 +7,23 @@ import { existsSync } from 'fs';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== Documentation upload API called ===');
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const subtaskId = formData.get('subtask_id') as string;
     const docType = formData.get('doc_type') as string;
     const uploadedBy = formData.get('uploaded_by') as string;
 
+    console.log('Form data received:', {
+      hasFile: !!file,
+      fileName: file?.name,
+      subtaskId,
+      docType,
+      uploadedBy,
+    });
+
     if (!file) {
-      return NextResponse.json(
-        { success: false, message: 'No file provided' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: 'No file provided' }, { status: 400 });
     }
 
     if (!subtaskId) {
@@ -46,15 +52,37 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify subtask exists
-    const subtask = await prisma.subtask.findUnique({
-      where: { id: parseInt(subtaskId) },
-    });
+    const parsedSubtaskId = parseInt(subtaskId);
+    console.log('Looking for subtask with ID:', parsedSubtaskId);
+
+    if (isNaN(parsedSubtaskId) || parsedSubtaskId <= 0) {
+      console.log('Invalid subtask ID format:', subtaskId);
+      return NextResponse.json(
+        { success: false, message: 'Invalid subtask ID format' },
+        { status: 400 }
+      );
+    }
+
+    let subtask;
+    try {
+      subtask = await prisma.subtask.findUnique({
+        where: { id: parsedSubtaskId },
+      });
+      console.log('Found subtask:', !!subtask);
+      if (subtask) {
+        console.log('Subtask details:', { id: subtask.id, title: subtask.title });
+      }
+    } catch (dbError) {
+      console.error('Database error when finding subtask:', dbError);
+      return NextResponse.json(
+        { success: false, message: 'Database error when verifying subtask' },
+        { status: 500 }
+      );
+    }
 
     if (!subtask) {
-      return NextResponse.json(
-        { success: false, message: 'Subtask not found' },
-        { status: 404 }
-      );
+      console.log('Subtask not found');
+      return NextResponse.json({ success: false, message: 'Subtask not found' }, { status: 404 });
     }
 
     // Create uploads directory if it doesn't exist
@@ -75,19 +103,51 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, buffer);
 
     // Save to database
-    const documentation = await prisma.documentation.create({
-      data: {
-        subtaskId: parseInt(subtaskId),
-        docType: (docType as DocumentType) || DocumentType.DOCUMENTATION,
-        filePath: `/uploads/documentation/${fileName}`,
-        fileName: file.name,
-        uploadedBy: uploadedBy ? parseInt(uploadedBy) : null,
-      },
-      include: {
-        subtask: true,
-        uploader: true,
-      },
+    console.log('Saving to database with data:', {
+      subtaskId: parsedSubtaskId,
+      docType: (docType as DocumentType) || DocumentType.DOCUMENTATION,
+      filePath: `/uploads/documentation/${fileName}`,
+      fileName: file.name,
+      uploadedBy: uploadedBy ? parseInt(uploadedBy) : null,
     });
+
+    let documentation;
+    try {
+      documentation = await prisma.documentation.create({
+        data: {
+          subtaskId: parsedSubtaskId,
+          docType: (docType as DocumentType) || DocumentType.DOCUMENTATION,
+          filePath: `/uploads/documentation/${fileName}`,
+          fileName: file.name,
+          uploadedBy: uploadedBy ? parseInt(uploadedBy) : null,
+        },
+        include: {
+          subtask: true,
+          uploader: true,
+        },
+      });
+      console.log('Documentation saved successfully:', documentation.id);
+    } catch (dbError) {
+      console.error('Database error when saving documentation:', dbError);
+      console.error('Error details:', {
+        name: dbError instanceof Error ? dbError.name : 'Unknown',
+        message: dbError instanceof Error ? dbError.message : String(dbError),
+        stack: dbError instanceof Error ? dbError.stack : 'No stack',
+      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: 'Database error when saving file record',
+          error:
+            process.env.NODE_ENV === 'development'
+              ? dbError instanceof Error
+                ? dbError.message
+                : String(dbError)
+              : undefined,
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
@@ -96,11 +156,16 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error uploading file:', error);
+    console.error('Error type:', typeof error);
+    console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
+    console.error('Error message:', error instanceof Error ? error.message : String(error));
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
+
     return NextResponse.json(
-      { 
-        success: false, 
-        message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error : undefined
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Internal server error',
+        error: process.env.NODE_ENV === 'development' ? String(error) : undefined,
       },
       { status: 500 }
     );
@@ -133,10 +198,10 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching documentation:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error : undefined
+        error: process.env.NODE_ENV === 'development' ? error : undefined,
       },
       { status: 500 }
     );

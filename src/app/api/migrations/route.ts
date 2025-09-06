@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   return NextResponse.json({
     success: true,
-    message: 'Claude Code Migration System',
+    message: 'Qwen Code Migration System',
     availableMigrations: {
       '/api/init-db': {
         method: 'POST',

@@ -44,7 +44,7 @@ export default function RegisterPage() {
         const error = await response.json();
         alert(error.message || 'Registration failed');
       }
-    } catch (error) {
+    } catch (_) {
       alert('An error occurred during registration');
     } finally {
       setIsLoading(false);
@@ -57,7 +57,7 @@ export default function RegisterPage() {
         <CardHeader className='space-y-1'>
           <CardTitle className='text-2xl text-center'>Create Account</CardTitle>
           <p className='text-sm text-muted-foreground text-center'>
-            Enter your details to create your Claude Code account
+            Enter your details to create your Qwen Code account
           </p>
         </CardHeader>
         <CardContent>

@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Aplikasi SAW - School Management System API",
-    "description": "Complete API collection for Aplikasi SAW school management system. Includes authentication, migrations, and system endpoints.",
+    "name": "Qwen Code - School Management System API",
+    "description": "Complete API collection for Qwen Code school management system. Includes authentication, migrations, and system endpoints.",
     "version": "1.1.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -518,7 +518,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"admin@claudecode.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"email\": \"admin@qwen-code.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
@@ -540,7 +540,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"superadmin@claudecode.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"email\": \"superadmin@qwen-code.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
@@ -562,7 +562,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"ahmad.admin@claudecode.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"email\": \"ahmad.admin@qwen-code.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
@@ -584,7 +584,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"bambang.principal@claudecode.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"email\": \"bambang.principal@qwen-code.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",
@@ -606,7 +606,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"andi.staff@claudecode.com\",\n  \"password\": \"password123\"\n}"
+              "raw": "{\n  \"email\": \"andi.staff@qwen-code.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/auth/login",

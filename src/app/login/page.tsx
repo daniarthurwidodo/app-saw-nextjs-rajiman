@@ -33,7 +33,7 @@ export default function LoginPage() {
         const error = await response.json();
         alert(error.message || 'Login failed');
       }
-    } catch (error) {
+    } catch (_) {
       alert('An error occurred during login');
     } finally {
       setIsLoading(false);
@@ -46,7 +46,7 @@ export default function LoginPage() {
         <CardHeader className='space-y-1'>
           <CardTitle className='text-2xl text-center'>Sign in</CardTitle>
           <p className='text-sm text-muted-foreground text-center'>
-            Enter your email and password to access Claude Code
+            Enter your email and password to access Qwen Code
           </p>
         </CardHeader>
         <CardContent>
