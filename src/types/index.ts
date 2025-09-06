@@ -47,20 +47,9 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
-  school_id?: number;
   created_at: string;
   updated_at: string;
   is_active: boolean;
-}
-
-export interface School {
-  sekolah_id: number;
-  nama_sekolah: string;
-  alamat?: string;
-  kontak?: string;
-  kepala_sekolah_id?: number;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface Task {

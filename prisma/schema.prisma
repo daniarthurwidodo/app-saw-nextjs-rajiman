@@ -13,14 +13,12 @@ model User {
   email            String          @unique(map: "email") @db.VarChar(255)
   password         String          @db.VarChar(255)
   role             Role            @default(user)
-  schoolId         Int?            @map("school_id")
   createdAt        DateTime?       @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt        DateTime?       @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
   isActive         Boolean?        @default(true) @map("is_active")
   criteria         Criteria[]
   uploadedDocs     Documentation[] @relation("UploadedByUser")
   createdReports   Report[]        @relation("CreatedByUser")
-  managedSchool    School[]        @relation("SchoolPrincipal")
   assignedSubtasks Subtask[]       @relation("SubtaskAssignedToUser")
   approvedTasks    Task[]          @relation("ApprovedByUser")
   assignedTasks    Task[]          @relation("AssignedToUser")
@@ -28,23 +26,9 @@ model User {
 
   @@index([email], map: "idx_email")
   @@index([role], map: "idx_role")
-  @@index([schoolId], map: "idx_school_id")
   @@map("users")
 }
 
-model School {
-  id          Int       @id @default(autoincrement()) @map("sekolah_id")
-  name        String    @map("nama_sekolah") @db.VarChar(255)
-  address     String?   @map("alamat") @db.Text
-  contact     String?   @map("kontak") @db.VarChar(100)
-  principalId Int?      @map("kepala_sekolah_id")
-  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamp(0)
-  updatedAt   DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(0)
-  principal   User?     @relation("SchoolPrincipal", fields: [principalId], references: [id], onUpdate: NoAction, map: "fk_schools_kepala_sekolah")
-
-  @@index([principalId], map: "idx_kepala_sekolah")
-  @@map("schools")
-}
 
 model Task {
   id               Int             @id @default(autoincrement()) @map("task_id")

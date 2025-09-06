@@ -16,8 +16,6 @@ interface User {
   name: string;
   email: string;
   role: UserRole;
-  school_id?: number;
-  school_name?: string;
   created_at: string;
   updated_at: string;
   is_active: boolean;
@@ -261,7 +259,6 @@ export default function UsersPage() {
                   <th className='text-left p-2 font-medium'>Name</th>
                   <th className='text-left p-2 font-medium'>Email</th>
                   <th className='text-left p-2 font-medium'>Role</th>
-                  <th className='text-left p-2 font-medium'>School</th>
                   <th className='text-left p-2 font-medium'>Status</th>
                   <th className='text-left p-2 font-medium'>Created</th>
                   <th className='text-left p-2 font-medium'>Actions</th>
@@ -279,7 +276,6 @@ export default function UsersPage() {
                         {getRoleDisplayName(user.role)}
                       </span>
                     </td>
-                    <td className='p-2'>{user.school_name || user.school_id || '-'}</td>
                     <td className='p-2'>
                       <span
                         className={`px-2 py-1 rounded-full text-xs ${

@@ -1,17 +1,18 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import KanbanBoard from '@/components/KanbanBoard';
-import TaskForm from '@/components/TaskForm';
-import AddSubtaskModal from '@/components/AddSubtaskModal';
-import { Task } from '@/types';
-import { Toaster } from 'sonner';
+import { useState } from "react";
+import KanbanBoard from "@/components/KanbanBoard";
+import TaskForm from "@/components/TaskForm";
+import AddSubtaskModal from "@/components/AddSubtaskModal";
+import { Task } from "@/types";
+import { Toaster } from "sonner";
 
 export default function TasksPage() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showAddSubtaskModal, setShowAddSubtaskModal] = useState(false);
-  const [selectedTaskForSubtask, setSelectedTaskForSubtask] = useState<Task | null>(null);
+  const [selectedTaskForSubtask, setSelectedTaskForSubtask] =
+    useState<Task | null>(null);
   const [refreshBoard, setRefreshBoard] = useState(0);
 
   const handleCreateTask = () => {
@@ -44,13 +45,8 @@ export default function TasksPage() {
     setRefreshBoard((prev) => prev + 1);
   };
 
-  const handleCloseAddSubtaskModal = () => {
-    setShowAddSubtaskModal(false);
-    setSelectedTaskForSubtask(null);
-  };
-
   return (
-    <div className='container mx-auto p-6'>
+    <div className="container mx-auto p-6">
       <KanbanBoard
         onCreateTask={handleCreateTask}
         onEditTask={handleEditTask}
@@ -72,7 +68,7 @@ export default function TasksPage() {
         onSuccess={handleSubtaskSuccess}
       />
 
-      <Toaster position='top-right' />
+      <Toaster position="top-right" />
     </div>
   );
 }
