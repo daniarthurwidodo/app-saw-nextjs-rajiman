@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "Qwen Code - School Management System API",
+    "name": "Claude Code - School Management System API",
     "description": "Comprehensive API collection for the School Management System with Tasks and Subtasks",
     "version": "2.0.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -8,7 +8,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:3000",
+      "value": "http://localhost:3004",
       "type": "string"
     }
   ],
@@ -201,7 +201,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"task_id\": 1,\n  \"title\": \"New Subtask\",\n  \"description\": \"Subtask description\",\n  \"assigned_to\": 1\n}"
+              "raw": "{\n  \"relation_task_id\": 1,\n  \"subtask_title\": \"New Subtask\",\n  \"subtask_description\": \"Subtask description\",\n  \"assigned_to\": 1\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/subtasks",
@@ -222,7 +222,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Subtask\",\n  \"is_completed\": true\n}"
+              "raw": "{\n  \"subtask_title\": \"Updated Subtask\",\n  \"subtask_status\": \"done\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/subtasks/1",
@@ -240,6 +240,30 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "subtasks", "1"]
             }
+          }
+        },
+        {
+          "name": "Get Subtasks by Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/by-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "by-status"]
+            },
+            "description": "Returns subtasks grouped by status"
+          }
+        },
+        {
+          "name": "Get Subtasks Progress",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/subtasks/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "subtasks", "progress"]
+            },
+            "description": "Returns subtasks completion progress"
           }
         }
       ]
@@ -270,6 +294,23 @@
                 {
                   "key": "role",
                   "value": "admin"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Users by School",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/users/by-school?school_id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "by-school"],
+              "query": [
+                {
+                  "key": "school_id",
+                  "value": "1"
                 }
               ]
             }
@@ -342,6 +383,286 @@
       ]
     },
     {
+      "name": "Settings Management",
+      "item": [
+        {
+          "name": "Get All Settings",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings"]
+            },
+            "description": "Get all app settings grouped by category"
+          }
+        },
+        {
+          "name": "Get Settings by Category",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/general",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings", "general"]
+            },
+            "description": "Get settings for a specific category (general, security, notification)"
+          }
+        },
+        {
+          "name": "Update Multiple Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"dark\",\n  \"app_name\": \"Updated School System\",\n  \"email_notifications\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings"]
+            },
+            "description": "Update multiple settings at once"
+          }
+        },
+        {
+          "name": "Update Single Setting",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": \"dark\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/settings/theme",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "settings", "theme"]
+            },
+            "description": "Update a single setting value"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile Management",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "Get current user profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile"]
+            },
+            "description": "Update current user profile"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"currentpass123\",\n  \"new_password\": \"newpass123\",\n  \"confirm_password\": \"newpass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/profile/password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "profile", "password"]
+            },
+            "description": "Change user password"
+          }
+        }
+      ]
+    },
+    {
+      "name": "File Upload & Documentation",
+      "item": [
+        {
+          "name": "Upload Image to Subtask",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "subtask_id",
+                  "value": "9",
+                  "type": "text"
+                },
+                {
+                  "key": "doc_type",
+                  "value": "documentation",
+                  "type": "text"
+                },
+                {
+                  "key": "uploaded_by",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documentation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documentation"]
+            },
+            "description": "Upload an image file to attach to a subtask. Supports JPG, PNG, GIF, WebP up to 10MB."
+          }
+        },
+        {
+          "name": "Get Documentation by Subtask",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/documentation?subtask_id=9",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documentation"],
+              "query": [
+                {
+                  "key": "subtask_id",
+                  "value": "9"
+                }
+              ]
+            },
+            "description": "Get all uploaded documentation/images for a specific subtask"
+          }
+        },
+        {
+          "name": "Update/Replace Image",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "doc_id",
+                  "value": "4",
+                  "type": "text",
+                  "description": "ID of the documentation record to update"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "doc_type",
+                  "value": "documentation",
+                  "type": "text"
+                },
+                {
+                  "key": "uploaded_by",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documentation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documentation"]
+            },
+            "description": "Update an existing documentation record. Can replace the image file and/or update metadata. The old file will be automatically deleted when replaced."
+          }
+        },
+        {
+          "name": "Update Metadata Only",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "doc_id",
+                  "value": "4",
+                  "type": "text",
+                  "description": "ID of the documentation record to update"
+                },
+                {
+                  "key": "doc_type",
+                  "value": "payment",
+                  "type": "text"
+                },
+                {
+                  "key": "uploaded_by",
+                  "value": "2",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documentation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documentation"]
+            },
+            "description": "Update only the metadata of existing documentation without replacing the file"
+          }
+        },
+        {
+          "name": "Get All Documentation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/documentation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documentation"]
+            },
+            "description": "Get all uploaded documentation/images across all subtasks"
+          }
+        }
+      ]
+    },
+    {
       "name": "Database Operations",
       "item": [
         {
@@ -375,6 +696,30 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "seed-users"]
             }
+          }
+        },
+        {
+          "name": "Get Migration Documentation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/migrations",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "migrations"]
+            },
+            "description": "Get migration documentation and status"
+          }
+        },
+        {
+          "name": "Get Documentation",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/documentation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documentation"]
+            },
+            "description": "Get API documentation"
           }
         },
         {

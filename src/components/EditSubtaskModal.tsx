@@ -56,6 +56,7 @@ export default function EditSubtaskModal({
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   // Load users on mount
   useEffect(() => {
@@ -64,9 +65,9 @@ export default function EditSubtaskModal({
     }
   }, [open]);
 
-  // Initialize form data when subtask changes
+  // Initialize form data when subtask changes or modal opens
   useEffect(() => {
-    if (subtask) {
+    if (subtask && open) {
       setFormData({
         title: subtask.title || subtask.subtask_title || '',
         description: subtask.subtask_description || '',
@@ -78,8 +79,21 @@ export default function EditSubtaskModal({
               ? SubtaskStatus.IN_PROGRESS
               : SubtaskStatus.TODO,
       });
+      // Reset upload states when modal opens
+      setSelectedFiles([]);
+      setUploadSuccess(false);
+      setUploadingImages(false);
     }
-  }, [subtask]);
+  }, [subtask, open]);
+
+  // Clear states when modal closes
+  useEffect(() => {
+    if (!open) {
+      setSelectedFiles([]);
+      setUploadSuccess(false);
+      setUploadingImages(false);
+    }
+  }, [open]);
 
   const loadUsers = async () => {
     setLoadingUsers(true);
@@ -112,14 +126,17 @@ export default function EditSubtaskModal({
         toast.error(`${file.name} is not an image file`);
         return false;
       }
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`${file.name} is larger than 5MB`);
+      if (file.size > 10 * 1024 * 1024) { // Updated to 10MB to match API
+        toast.error(`${file.name} is larger than 10MB`);
         return false;
       }
       return true;
     });
 
-    setSelectedFiles((prev) => [...prev, ...validFiles]);
+    if (validFiles.length > 0) {
+      setSelectedFiles((prev) => [...prev, ...validFiles]);
+      toast.success(`${validFiles.length} file(s) selected for upload`);
+    }
   };
 
   const removeSelectedFile = (index: number) => {
@@ -127,32 +144,63 @@ export default function EditSubtaskModal({
   };
 
   const uploadImages = async (): Promise<void> => {
-    if (selectedFiles.length === 0) return;
+    if (selectedFiles.length === 0) {
+      toast.error('No files selected for upload');
+      return;
+    }
+
+    if (!subtask?.subtask_id) {
+      toast.error('Subtask ID is required for upload');
+      return;
+    }
 
     setUploadingImages(true);
+    setUploadSuccess(false);
+
+    let successCount = 0;
+    let failedFiles: string[] = [];
+
     try {
       for (const file of selectedFiles) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('subtask_id', subtask!.subtask_id.toString());
-        formData.append('doc_type', 'DOCUMENTATION');
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('subtask_id', subtask.subtask_id.toString());
+          formData.append('doc_type', 'documentation'); // Fixed casing
+          formData.append('uploaded_by', '1'); // You might want to get this from user context
 
-        const response = await fetch('/api/documentation', {
-          method: 'POST',
-          body: formData,
-        });
+          const response = await fetch('/api/documentation', {
+            method: 'POST',
+            body: formData,
+          });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || `Failed to upload ${file.name}`);
+          const responseData = await response.json();
+
+          if (!response.ok) {
+            throw new Error(responseData.message || `Failed to upload ${file.name}`);
+          }
+
+          successCount++;
+        } catch (fileError) {
+          console.error(`Error uploading ${file.name}:`, fileError);
+          failedFiles.push(file.name);
         }
       }
 
-      toast.success(`${selectedFiles.length} image(s) uploaded successfully`);
-      setSelectedFiles([]);
+      if (successCount > 0) {
+        toast.success(`${successCount} image(s) uploaded successfully!`);
+        setSelectedFiles([]);
+        setUploadSuccess(true);
+        // Trigger a refresh of the parent component to show new images
+        onSuccess?.();
+      }
+
+      if (failedFiles.length > 0) {
+        toast.error(`Failed to upload: ${failedFiles.join(', ')}`);
+      }
     } catch (error) {
       console.error('Error uploading images:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to upload images');
+      toast.error('Failed to upload images. Please try again.');
     } finally {
       setUploadingImages(false);
     }
@@ -215,6 +263,12 @@ export default function EditSubtaskModal({
       }
 
       toast.success('Subtask updated successfully!');
+      
+      // If images were uploaded, mention they should refresh to see them
+      if (uploadSuccess) {
+        toast.success('Subtask updated! New images are now attached.', { duration: 4000 });
+      }
+      
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {
@@ -353,8 +407,8 @@ export default function EditSubtaskModal({
               </Select>
             </div>
 
-            {/* Image Upload Section - TEMPORARILY DISABLED FOR DEBUGGING */}
-            {/* <div>
+            {/* Image Upload Section */}
+            <div>
               <Label>Upload New Images</Label>
               <div className="space-y-3 mt-2">
                 <div className="flex items-center gap-2">
@@ -364,6 +418,7 @@ export default function EditSubtaskModal({
                     multiple
                     onChange={handleFileSelect}
                     className="flex-1"
+                    disabled={uploadingImages}
                   />
                   <Button
                     type="button"
@@ -377,34 +432,55 @@ export default function EditSubtaskModal({
                     ) : (
                       <Upload className="h-4 w-4 mr-2" />
                     )}
-                    Upload
+                    {uploadingImages ? 'Uploading...' : 'Upload'}
                   </Button>
                 </div>
 
+                {/* Upload success indicator */}
+                {uploadSuccess && (
+                  <div className="flex items-center gap-2 p-2 bg-green-50 text-green-700 rounded-md text-sm">
+                    <Check className="h-4 w-4" />
+                    Images uploaded successfully! The subtask will show updated images after you close this modal.
+                  </div>
+                )}
+
                 {/* Selected files preview */}
-            {/* {selectedFiles.length > 0 && (
+                {selectedFiles.length > 0 && (
                   <div className="space-y-2">
-                    <Label className="text-sm text-gray-600">Selected Files:</Label>
+                    <Label className="text-sm text-gray-600">Selected Files ({selectedFiles.length}):</Label>
                     <div className="max-h-32 overflow-y-auto space-y-1">
                       {selectedFiles.map((file, index) => (
                         <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                          <span className="text-sm truncate flex-1">{file.name}</span>
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <ImageIcon className="h-4 w-4 text-gray-500 flex-shrink-0" />
+                            <span className="text-sm truncate">{file.name}</span>
+                            <span className="text-xs text-gray-500 flex-shrink-0">
+                              ({(file.size / 1024 / 1024).toFixed(1)}MB)
+                            </span>
+                          </div>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={() => removeSelectedFile(index)}
                             className="h-6 w-6 p-0 text-red-600 hover:text-red-800"
+                            disabled={uploadingImages}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <X className="h-3 w-3" />
                           </Button>
                         </div>
                       ))}
                     </div>
                   </div>
-                )} */}
-            {/* </div>
-            </div> */}
+                )}
+
+                {/* Upload instructions */}
+                <p className="text-xs text-gray-500">
+                  Select multiple images (JPG, PNG, GIF, WebP) up to 10MB each. 
+                  Images will be attached to this subtask as documentation.
+                </p>
+              </div>
+            </div>
 
             {/* Show existing images if available */}
             {subtask.images && subtask.images.length > 0 && (
